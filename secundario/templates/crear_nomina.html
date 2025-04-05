@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nueva Nómina</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+    <link rel="stylesheet" href="{% static 'css/nominabase.css' %}">
+</head>
+
+<body>
+    {% include 'includes/navbar.html' %}
+
+    <div class="container">
+        <h1>Crear Nueva Nómina</h1>
+        <form method="post" id="nominaForm">
+            {% csrf_token %}
+
+
+            <div class="form-section">
+                <h2>Información del Empleado</h2>
+
+                <div class="form-group">
+                    <label for="id_empleado">Empleado:</label>
+                    <select name="id_empleado" id="id_empleado" required>
+                        <option value="">Seleccione un empleado</option>
+                        {% for empleado in empleados %}
+                        <option value="{{ empleado.id_empleado }}"
+                            data-sueldo-id="{{ empleado.sueldo_set.last.id_sueldo|default:'' }}"
+                            data-sueldo-bs="{{ empleado.sueldo_set.last.sueldo_bs|default:0 }}"
+                            data-horas-semanales="{{ empleado.id_jornada.horas_semanales }}"
+                            data-jornada-nombre="{{ empleado.id_jornada.nombre_jornada }}"
+                            data-cestaticket="{{ empleado.cestaticket|default:0 }}">
+                            {{ empleado.nombre }} {{ empleado.apellido }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div id="info-empleado" class="calculation-section">
+                    <div class="calculation-row">
+                        <span>Jornada:</span>
+                        <span id="info-jornada">-</span>
+                    </div>
+                    <div class="calculation-row">
+                        <span>Sueldo Base Mensual:</span>
+                        <span id="info-sueldo-base">0.00 Bs</span>
+                    </div>
+                    <div class="calculation-row">
+                        <span>Horas Semanales:</span>
+                        <span id="info-horas-semanales">0</span>
+                    </div>
+                    <div class="calculation-row">
+                        <span>Horas Ordinarias Mensuales:</span>
+                        <span id="info-horas-mensuales">0</span>
+                    </div>
+                    <div class="calculation-row">
+                        <span>Valor Hora Ordinaria:</span>
+                        <span id="info-valor-hora">0.00 Bs/h</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Sueldo y Horas</h2>
+
+                <div class="form-group">
+                    <label for="sueldo_bs_base">Sueldo Base (Bs):</label>
+                    <input type="text" id="sueldo_bs_base_display" class="readonly-field" readonly>
+                    <input type="hidden" name="sueldo_bs_base" id="sueldo_bs_base" required>
+                    <input type="hidden" name="id_sueldo" id="id_sueldo">
+                </div>
+
+                <div class="form-group">
+                    <label for="horas_ordinarias">Horas Ordinarias Mensuales:</label>
+                    <input type="number" name="horas_ordinarias" id="horas_ordinarias" class="readonly-field" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="valor_hora_ordinaria">Valor Hora Ordinaria (Bs):</label>
+                    <input type="number" step="0.01" name="valor_hora_ordinaria" id="valor_hora_ordinaria"
+                        class="readonly-field" readonly>
+                    <div class="info-text">(Sueldo Base × 4 semanas) / (Horas Semanales × 4)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="periodo">Período de Pago:</label>
+                    <input type="date" name="periodo" id="periodo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dias_trabajados">Días Trabajados:</label>
+                    <input type="number" name="dias_trabajados" id="dias_trabajados" value="30" min="1" max="31"
+                        required>
+                    <div class="info-text">Días laborados en el mes (normalmente 30)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="semanas_laboradas">Semanas Laboradas:</label>
+                    <input type="number" step="0.1" name="semanas_laboradas" id="semanas_laboradas" value="4.33" min="1"
+                        max="5" required>
+                    <div class="info-text">Semanas trabajadas (4.33 para un mes completo)</div>
+                </div>
+            </div>
+
+
+            <div class="form-section">
+                <h2>Horas Extras y Bonificaciones</h2>
+
+                <div class="form-group">
+                    <label for="horas_extras">Horas Extras:</label>
+                    <input type="number" name="horas_extras" id="horas_extras" value="0" min="0">
+                    <div class="info-text">Horas trabajadas fuera de la jornada (50% recargo)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="horas_festivas">Horas Festivas:</label>
+                    <input type="number" name="horas_festivas" id="horas_festivas" value="0" min="0">
+                    <div class="info-text">Horas trabajadas en días feriados (50% recargo)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cestaticket_bs">Cestaticket (Bs):</label>
+                    <input type="number" step="0.01" name="cestaticket_bs" id="cestaticket_bs" value="0" min="0">
+                    <div class="info-text">Bono de alimentación</div>
+                </div>
+            </div>
+
+
+            <div class="form-section">
+                <h2>Deducciones</h2>
+
+                <div class="form-group">
+                    <label for="dias_vacaciones">Días de Vacaciones:</label>
+                    <input type="number" name="dias_vacaciones" id="dias_vacaciones" value="0" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="dias_enfermedad">Días de Enfermedad:</label>
+                    <input type="number" name="dias_enfermedad" id="dias_enfermedad" value="0" min="0">
+                </div>
+            </div>
+
+
+            <div class="calculation-section">
+                <h2 style="margin-top: 0;">Resumen de Nómina</h2>
+
+                <div class="calculation-row">
+                    <span>Sueldo Base Proporcional:</span>
+                    <span id="sueldo-base-proporcional">0.00 Bs</span>
+                    <input type="hidden" name="sueldo_base_proporcional" id="sueldo_base_proporcional">
+                </div>
+
+                <div class="calculation-row">
+                    <span>Pago Horas Extras:</span>
+                    <span id="pago-horas-extras">0.00 Bs</span>
+                    <input type="hidden" name="pago_horas_extras_bs" id="pago_horas_extras_bs">
+                </div>
+
+                <div class="calculation-row">
+                    <span>Pago Horas Festivas:</span>
+                    <span id="pago-horas-festivas">0.00 Bs</span>
+                    <input type="hidden" name="pago_horas_festivas_bs" id="pago_horas_festivas_bs">
+                </div>
+
+                <div class="calculation-row">
+                    <span>Cestaticket:</span>
+                    <span id="display-cestaticket">0.00 Bs</span>
+                </div>
+
+                <div class="calculation-row total">
+                    <span>Total Asignaciones:</span>
+                    <span id="total-asignaciones">0.00 Bs</span>
+                    <input type="hidden" name="total_asignaciones_bs" id="total_asignaciones_bs">
+                </div>
+
+                <div class="calculation-row">
+                    <span>Deducción IVSS (4%):</span>
+                    <span id="deduccion-ivss">0.00 Bs</span>
+                    <input type="hidden" name="ivss_bs" id="ivss_bs">
+                </div>
+
+                <div class="calculation-row">
+                    <span>Deducción FAOV (0.5%):</span>
+                    <span id="deduccion-faov">0.00 Bs</span>
+                    <input type="hidden" name="faov_bs" id="faov_bs">
+                </div>
+
+                <div class="calculation-row">
+                    <span>Deducción RPE (1%):</span>
+                    <span id="deduccion-rpe">0.00 Bs</span>
+                    <input type="hidden" name="rpe_bs" id="rpe_bs">
+                </div>
+
+                <div class="calculation-row total">
+                    <span>Total Deducciones:</span>
+                    <span id="total-deducciones">0.00 Bs</span>
+                    <input type="hidden" name="total_deducciones_bs" id="total_deducciones_bs">
+                </div>
+
+                <div class="calculation-row" style="background-color: #cbf6fc; padding: 12px; border-radius: 5px;">
+                    <span style="font-weight: bold; color: #007c91;">Sueldo Neto a Pagar:</span>
+                    <span style="font-weight: bold; color: #007c91;" id="sueldo-neto">0.00 Bs</span>
+                    <input type="hidden" name="sueldo_neto_bs" id="sueldo_neto_bs">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_emision">Fecha de Emisión:</label>
+                <input type="date" name="fecha_emision" id="fecha_emision" required>
+            </div>
+
+            <div class="button-group">
+                <div>
+                    <button type="submit" class="btn btn-primary">Guardar Nómina</button>
+                </div>
+                <a href="{% url 'home' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+
+        </form>
+    </div>
+
+    <script src="{% static 'js/crearnomina.js' %}"></script>
+</body>
+
+</html>

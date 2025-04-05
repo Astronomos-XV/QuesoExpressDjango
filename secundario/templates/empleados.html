@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Empleados</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/empleados.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+</head>
+
+<body>
+    {% include 'includes/navbar.html' %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <div class="container">
+        <div class="table-responsive">
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Cedula</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Telefono</th>
+                    <th>Correo</th>
+                    <th>Fecha de Contratación</th>
+                    <th>Departamento</th>
+                    <th>Profesión</th>
+                    <th>Labor</th>
+                    <th>Jornada</th>
+                    <th>Acciones</th>
+                </tr>
+                {% for empleado in empleados %}
+                <tr>
+                    <td>{{ empleado.id_empleado }}</td>
+                    <td>{{ empleado.cedula }}</td>
+                    <td>{{ empleado.nombre }}</td>
+                    <td>{{ empleado.apellido }}</td>
+                    <td>{{ empleado.telefono }}</td>
+                    <td>{{ empleado.correo }}</td>
+                    <td>{{ empleado.fecha_contratacion }}</td>
+                    <td>{{ empleado.id_depa }}</td>
+                    <td>{{ empleado.id_pro }}</td>
+                    <td>{{ empleado.id_trabajo }}</td>
+                    <td>{{ empleado.id_jornada}}</td>
+                    <td>
+                        <a class="btn btn-editar" href="{% url 'editar_empleado' empleado.id_empleado %}"><i
+                                class="fas fa-edit"></i> Editar</a>
+                        <a class="btn btn-eliminar" href="{% url 'eliminar_empleado' empleado.id_empleado %}"><i
+                                class="fas fa-trash"></i> Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <a href="{% url 'crear_empleado' %}" class="btn btn-nuevo"><i class="fas fa-plus-circle"></i> Nuevo Empleado</a>
+        <a href="{% url 'home' %}" class="btn btn-home"> Inicio</a>
+    </div>
+    <script src="{% static 'js/navbar.js' %}"></script>
+</body>
+
+</html>

@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+</head>
+
+<body>
+    {% include 'includes/navbar.html' %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <a class="btn" href="{% url 'tasa' %}">Actualizar Tasa</a>
+    <div class="table-responsive">
+        <table class="nomina-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Valor Tasa (Bs)</th>
+                    <th>Activa</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tasa in tasas %}
+                <tr>
+                    <td>{{ tasa.id_tasa }}</td>
+                    <td>{{ tasa.fecha }}</td>
+                    <td>{{ tasa.valor_tasa }}</td>
+                    <td>{{ tasa.activa }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No hay tasas registradas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="{% static 'js/navbar.js' %}"></script>
+</body>
+
+</html>

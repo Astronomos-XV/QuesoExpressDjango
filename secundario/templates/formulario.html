@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Usuario</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+
+</head>
+
+<body>
+    {% include 'includes/navbar.html' %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <div class="container">
+        <h1>{% if form.instance.id_empleado %}Editar{% else %}Crear{% endif %} Empleado</h1>
+        <form method="POST">
+            {% csrf_token %}
+
+            <div>
+                <label for="id_nombre">Nombre:</label>
+                {{ form.nombre }}
+            </div>
+
+            <div>
+                <label for="id_apellido">Apellido:</label>
+                {{ form.apellido }}
+            </div>
+
+            <div>
+                <label for="id_telefono">Telefono:</label>
+                {{ form.telefono }}
+            </div>
+
+            <div>
+                <label for="id_cedula">Cedula:</label>
+                {{ form.cedula }}
+            </div>
+
+            <div>
+                <label for="id_correo">Correo:</label>
+                {{ form.correo }}
+            </div>
+
+
+            <div>
+                <label for="id_fecha_contratacion">Fecha de Contratación:</label>
+                {{ form.fecha_contratacion }}
+            </div>
+
+            <div>
+                <label for="id_depa">Departamento:</label>
+                {{ form.id_depa }}
+            </div>
+
+            <div>
+                <label for="id_pro">Profesión:</label>
+                {{ form.id_pro }}
+            </div>
+
+            <div>
+                <label for="id_trabajo">Labor:</label>
+                {{ form.id_trabajo }}
+            </div>
+
+            <div>
+                <label for="id_jornada">Tipo de Jornada:</label>
+                {{ form.id_jornada }}
+            </div>
+            <div class="espacio">
+                <button type="submit" class="guardar">Guardar</button>
+            </div>
+        </form>
+
+    </div>
+    <script src="{% static 'js/navbar.js' %}"></script>
+</body>
+
+</html>

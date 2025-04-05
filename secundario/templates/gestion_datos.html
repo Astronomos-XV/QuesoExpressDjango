@@ -1,0 +1,181 @@
+{% extends 'home.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+    <h1>Gestión de Datos</h1>
+
+    {% if form %}
+    <div class="card mt-3">
+        <div class="card-header">
+            {% if obj %}Editar{% else %}Crear Nuevo{% endif %} {{ form_type|title }}
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {% if obj %}
+                {% if form_type == 'departamento' %}
+                <input type="hidden" name="id_depa" value="{{ obj.id_depa }}">
+                {% elif form_type == 'profesion' %}
+                <input type="hidden" name="id_pro" value="{{ obj.id_pro }}">
+                {% elif form_type == 'labor' %}
+                <input type="hidden" name="id_trabajo" value="{{ obj.id_trabajo }}">
+                {% elif form_type == 'jornada' %}
+                <input type="hidden" name="id_jornada" value="{{ obj.id_jornada }}">
+                {% endif %}
+                {% endif %}
+                {{ form.as_p }}
+                <div class="button-group">
+                    <div>
+                        <button type="submit" class="btn btn-primary" name="{{ form_type }}">
+                            {% if obj %}Actualizar{% else %}Guardar{% endif %}
+                        </button>
+                    </div>
+                    <a href="?form={{ form_type }}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not form_type or form_type == 'departamento' %}
+    <div class="table-container">
+        <h3>Departamentos</h3>
+        <table class="nomina-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Ubicación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dep in departamentos %}
+                <tr>
+                    <td>{{ dep.id_depa }}</td>
+                    <td>{{ dep.nombre_depa }}</td>
+                    <td>{{ dep.ubicacion }}</td>
+                    <td>
+                        <a href="?form=departamento&edit={{ dep.id_depa }}&type=departamento"
+                            class="btn btn-sm btn-warning">Editar</a>
+                        <a href="?form=departamento&delete={{ dep.id_depa }}&type=departamento"
+                            class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro?')">Eliminar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No hay departamentos registrados</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if not form_type or form_type == 'profesion' %}
+    <div class="table-container">
+        <h3>Profesiones</h3>
+        <table class="nomina-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pro in profesiones %}
+                <tr>
+                    <td>{{ pro.id_pro }}</td>
+                    <td>{{ pro.nombre_pro }}</td>
+                    <td>
+                        <a href="?form=profesion&edit={{ pro.id_pro }}&type=profesion"
+                            class="btn btn-sm btn-warning">Editar</a>
+                        <a href="?form=profesion&delete={{ pro.id_pro }}&type=profesion" class="btn btn-sm btn-danger"
+                            onclick="return confirm('¿Está seguro?')">Eliminar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">No hay profesiones registradas</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if not form_type or form_type == 'labor' %}
+    <div class="table-container">
+        <h3>Labores</h3>
+        <table class="nomina-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lab in labores %}
+                <tr>
+                    <td>{{ lab.id_trabajo }}</td>
+                    <td>{{ lab.nombre_trabajo }}</td>
+                    <td>{{ lab.descripcion|truncatechars:50 }}</td>
+                    <td>
+                        <a href="?form=labor&edit={{ lab.id_trabajo }}&type=labor"
+                            class="btn btn-sm btn-warning">Editar</a>
+                        <a href="?form=labor&delete={{ lab.id_trabajo }}&type=labor" class="btn btn-sm btn-danger"
+                            onclick="return confirm('¿Está seguro?')">Eliminar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No hay labores registradas</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if not form_type or form_type == 'jornada' %}
+    <div class="table-container">
+        <h3>Tipos de Jornada</h3>
+        <table class="nomina-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Horas Semanales</th>
+                    <th>Sueldo Semanal (USD)</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for jorn in jornadas %}
+                <tr>
+                    <td>{{ jorn.id_jornada }}</td>
+                    <td>{{ jorn.nombre_jornada }}</td>
+                    <td>{{ jorn.horas_semanales }}</td>
+                    <td>{{ jorn.sueldo_semanal_usd }}</td>
+                    <td>
+                        <a href="?form=jornada&edit={{ jorn.id_jornada }}&type=jornada"
+                            class="btn btn-sm btn-warning">Editar</a>
+                        <a href="?form=jornada&delete={{ jorn.id_jornada }}&type=jornada" class="btn btn-sm btn-danger"
+                            onclick="return confirm('¿Está seguro?')">Eliminar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No hay jornadas registradas</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

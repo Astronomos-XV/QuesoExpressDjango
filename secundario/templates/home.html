@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Inicio</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <script src="{% static 'js/home.js' %}" defer></script>
+</head>
+
+<body>
+    {% include 'includes/navbar.html' %}
+
+    <main>
+        {% block content %}
+        <h1>Bienvenido a Queso Express</h1>
+        <p class="bold">Aquí puede encontrar los empleados de la empresa</p>
+        <div class="button-group">
+            <a class="btn" href="{% url 'crear_empleado' %}">Registrar Empleados</a>
+            <a class="btn" href="{% url 'listar_empleados' %}">Mostrar Listado de Empleados</a>
+            <a class="btn" href="{% url 'crear_nomina' %}">Crear Nueva Nómina</a>
+            <a class="btn" href="{% url 'sueldo_lista' %}">Ver Sueldos</a>
+            <a class="btn" href="{% url 'tasa' %}">Ver Tasas</a>
+        </div>
+
+        <div class="table-container">
+            <h2 class="table-title">Lista de Nominas</h2>
+            <table class="nomina-table">
+                <thead>
+                    <tr>
+                        <th>ID Nómina</th>
+                        <th>Empleado</th>
+                        <th>Período</th>
+                        <th>Sueldo Base (Bs)</th>
+                        <th>Cestaticket (Bs)</th>
+                        <th>Horas Extras</th>
+                        <th>Pago Extras (Bs)</th>
+                        <th>Horas Festivas</th>
+                        <th>Pago Festivas (Bs)</th>
+                        <th>Total Asignaciones (Bs)</th>
+                        <th>Total Deducciones (Bs)</th>
+                        <th>Sueldo Neto (Bs)</th>
+                        <th>Fecha Emisión</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for nomina in nominas %}
+                    <tr>
+                        <td>{{ nomina.id_nomina }}</td>
+                        <td>{{ nomina.id_empleado.nombre }} {{ nomina.id_empleado.apellido }}</td>
+                        <td>{{ nomina.periodo }}</td>
+                        <td>{{ nomina.sueldo_bs_base }}</td>
+                        <td>{{ nomina.cestaticket_bs }}</td>
+                        <td>{{ nomina.horas_extras }}</td>
+                        <td>{{ nomina.pago_horas_extras_bs }}</td>
+                        <td>{{ nomina.horas_festivas }}</td>
+                        <td>{{ nomina.pago_horas_festivas_bs }}</td>
+                        <td>{{ nomina.total_asignaciones_bs }}</td>
+                        <td>{{ nomina.total_deducciones_bs }}</td>
+                        <td>{{ nomina.sueldo_neto_bs }}</td>
+                        <td>{{ nomina.fecha_emision }}</td>
+                        <td class="action-buttons">
+                            <div>
+                                <a href="{% url 'editar_nomina' nomina.id_nomina %}" class="btn btn-warning">
+                                    Editar
+                                </a>
+                                <a href="{% url 'eliminar_nomina' nomina.id_nomina %}" class="btn btn-danger"
+                                    onclick="return confirm('¿Está seguro de eliminar esta nómina?');">
+                                    Eliminar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="14">No hay nóminas registradas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endblock %}
+    </main>
+
+    <script src="{% static 'js/navbar.js' %}"></script>
+</body>
+
+</html>

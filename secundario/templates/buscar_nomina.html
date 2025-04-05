@@ -1,0 +1,41 @@
+{% extends 'empleadopagina.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Resultados de búsqueda</h2>
+    {% if cedula_buscada %}
+    <p>Mostrando nóminas para cédula: <strong>{{ cedula_buscada }}</strong></p>
+    {% endif %}
+
+    {% if nominas %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID Nómina</th>
+                <th>Empleado</th>
+                <th>Período</th>
+                <th>Sueldo Neto</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for nomina in nominas %}
+            <tr>
+                <td>{{ nomina.id_nomina }}</td>
+                <td>{{ nomina.id_empleado.nombre }} {{ nomina.id_empleado.apellido }}</td>
+                <td>{{ nomina.periodo }}</td>
+                <td>{{ nomina.sueldo_neto_bs }} Bs</td>
+                <td>
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-info">
+        No se encontraron nóminas para la cédula proporcionada.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

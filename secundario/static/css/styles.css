@@ -1,0 +1,121 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f8ff;
+}
+
+
+h1 {
+    color: #007c91;
+    text-align: center;
+}
+
+h2 {
+    color: #555;
+    text-align: center;
+}
+
+
+
+
+p.bold {
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.button-group {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+
+
+
+
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007c91;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 5px;
+    transition: background-color 0.3s;
+}
+
+
+.btn:hover {
+    background-color: #0092ac;
+}
+
+.table-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.table-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+.nomina-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border: 1px solid #83abbe;
+}
+
+.nomina-table th,
+.nomina-table td {
+    border: 1px solid #b0bec5;
+
+    padding: 8px;
+    text-align: left;
+}
+
+.nomina-table th {
+    background-color: #007c91;
+    color: white;
+    font-weight: bold;
+}
+
+.nomina-table td {
+    background-color: #fff;
+
+}
+
+.nomina-table tr:hover {
+    background-color: #f5f5f5;
+
+}
+
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+
+.form-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.alert-container {
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+.confirmation-form {
+    margin-top: 1.5rem;
+}

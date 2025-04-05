@@ -1,0 +1,64 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Editar Sueldo</h2>
+
+    <form method="post" class="clean-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.id_empleado.id_for_label }}">Empleado:</label>
+            {{ form.id_empleado }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.id_jornada.id_for_label }}">Tipo de Jornada:</label>
+            {{ form.id_jornada }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.id_tasa.id_for_label }}">Tasa Activa:</label>
+            {{ form.id_tasa }}
+        </div>
+
+        <div class="button-group">
+            <div>
+                <button type="submit" class="btn btn-primary">
+                    Guardar
+                </button>
+            </div>
+            <a href="{% url 'sueldo_lista' %}" class="btn btn-secondary ml-2">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .clean-form {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .clean-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .clean-form label {
+        font-weight: 500;
+        color: #007c91;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .clean-form select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        background-color: white;
+    }
+</style>
+{% endblock %}

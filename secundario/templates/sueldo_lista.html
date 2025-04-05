@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Sueldos</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+
+</head>
+
+<body>
+    {% include 'includes/navbar.html' %}
+
+    <main class="container">
+        <h1>Listado de Sueldos</h1>
+
+        <a class="btn" href="{% url 'sueldo_creacion' %}" style="background-color: #28a745; color: white;">Agregar
+            Sueldo</a>
+
+        <div class="table-responsive">
+            <table class="nomina-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Empleado</th>
+                        <th>Sueldo (Bs)</th>
+                        <th>Tasa (Bs/USD)</th>
+                        <th>Jornada</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if sueldos %}
+                    {% for sueldo in sueldos %}
+                    <tr>
+                        <td>{{ sueldo.id_sueldo }}</td>
+                        <td>{{ sueldo.id_empleado.nombre }} {{ sueldo.id_empleado.apellido }}</td>
+                        <td>{{ sueldo.sueldo_bs|floatformat:2 }}</td>
+                        <td>{{ sueldo.id_tasa.valor_tasa|floatformat:2 }}</td>
+                        <td>{{ sueldo.id_jornada.nombre_jornada }} ({{ sueldo.id_jornada.horas_semanales }}h)</td>
+                        <td>
+                            <a href="{% url 'sueldo_editar' sueldo.id_sueldo %}" class="btn btn-warning">Editar</a>
+                            <a href="{% url 'sueldo_eliminar' sueldo.id_sueldo %}" class="btn btn-danger">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No hay sueldos registrados</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="{% static 'js/navbar.js' %}"></script>
+</body>
+
+</html>

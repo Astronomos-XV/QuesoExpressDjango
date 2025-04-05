@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nuevo Sueldo</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+    <script src="{% static 'js/sueldo.js' %}" defer></script>
+    <style>
+        .campo-calculado {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+        .info-empleado {
+            background-color: #e9f7ef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .resultado-calculo {
+            font-weight: bold;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'includes/navbar.html' %}
+
+    <main>
+        <div class="container">
+            <h1>Crear Nuevo Sueldo</h1>
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="info-empleado" id="info-empleado">
+                    <p>Seleccione un empleado para ver su información actual</p>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="id_empleado">Empleado:</label>
+                    <select name="id_empleado" id="id_empleado" class="form-control" required>
+                        <option value="">Seleccione un empleado</option>
+                        {% for empleado in empleados %}
+                        <option value="{{ empleado.id_empleado }}" data-jornada="{{ empleado.id_jornada.id_jornada }}"
+                            data-sueldo-actual="{{ empleado.id_jornada.horas_semanales }}"
+                            data-jornada-nombre="{{ empleado.id_jornada.nombre_jornada }}"
+                            data-jornada-sueldo="{{ empleado.id_jornada.sueldo_semanal_usd }}">
+                            {{ empleado.nombre }} {{ empleado.apellido }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="id_jornada">Jornada:</label>
+                    <select name="id_jornada" id="id_jornada" class="form-control" readonly>
+                        {% for jornada in jornadas %}
+                        <option value="{{ jornada.id_jornada }}" data-sueldo-usd="{{ jornada.sueldo_semanal_usd }}"
+                            data-horas="{{ jornada.horas_semanales }}">
+                            {{ jornada.nombre_jornada }} ({{ jornada.sueldo_semanal_usd }} USD/semana)
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <small class="text-muted">
+
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_tasa">Tasa de cambio:</label>
+                    <select name="id_tasa" id="id_tasa" class="form-control" required>
+                        {% for tasa in tasas %}
+                        <option value="{{ tasa.id_tasa }}" data-valor-tasa="{{ tasa.valor_tasa }}">
+                            {{ tasa.valor_tasa|floatformat:2 }} Bs/USD ({{ tasa.fecha|date:"d/m/Y" }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Sueldo calculado:</label>
+                    <div class="resultado-calculo" id="resultado-calculo">
+                        Seleccione jornada y tasa para ver el cálculo
+                    </div>
+                    <small class="text-muted">
+                        Fórmula: Sueldo semanal (USD) × Tasa (Bs/USD) = Sueldo semanal (Bs)
+                    </small>
+                </div>
+
+
+                <input type="hidden" name="sueldo_bs" id="sueldo_bs">
+
+                <div class="button-group">
+                    <div>
+                        <button type="submit" class="btn guardar">Guardar</button>
+                    </div>
+                    <a href="{% url 'home' %}" class="btn cancelar">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+
+</body>
+
+</html>

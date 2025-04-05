@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Añadir Usuario</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <script src="{% static 'js/password.js' %}" defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Añadir Usuario</h2>
+        <form method="post">
+            {% csrf_token %}
+
+            {% for field in form %}
+            {% if field.name != 'password' %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+            </div>
+            {% endif %}
+            {% endfor %}
+
+            <div class="form-group">
+                {{ form.password.label_tag }}
+                <div style="display: flex; align-items: last baseline;">
+                    {{ form.password }}
+                    <button type="button" onclick="togglePasswordVisibility('{{ form.password.auto_id }}')">
+                        Mostrar
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit">Crear Usuario</button>
+
+        </form>
+        <a class="btn" href="{% url 'login' %}">Volver a Login</a>
+    </div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,107 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    /* Color de fondo suave */
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+h1 {
+    margin-top: 40px;
+    color: #008080;
+    font-size: 2.5em;
+    /* Tamaño de fuente grande */
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    /* Centra el contenedor */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    /* Sombra suave */
+    padding: 30px;
+    /* Espacio dentro del contenedor */
+    margin-bottom: 40px;
+    /* Espacio inferior */
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    /* Espacio entre el label y el campo */
+    text-align: left;
+    font-weight: bold;
+    color: #333;
+    /* Color de texto más oscuro */
+}
+
+input[type="text"],
+input[type="email"] {
+    width: 100%;
+    padding: 12px;
+    /* Espaciado interno más cómodo */
+    margin-bottom: 10px;
+    /* Reduce el espacio entre los campos */
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+    /* Transición en el borde */
+    box-sizing: border-box;
+    /* Incluye el padding en el tamaño total */
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus {
+    border-color: #007BFF;
+    /* Color de borde al hacer foco */
+    outline: none;
+    /* Sin contorno */
+}
+
+.guardar {
+    padding: 12px 25px;
+    /* Botón más grande */
+    background-color: #007BFF;
+    /* Color de fondo azul */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    /* Transición en el color de fondo */
+
+}
+
+.guardar:hover {
+    background-color: #0056b3;
+    /* Color de fondo al pasar el mouse */
+}
+
+.espacio {
+    margin-top: 10px;
+    margin-bottom: 20px;
+
+}
+
+/*a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    background-color: #008cba;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 20px 0;
+    transition: background-color 0.3s;
+}*/
+
+
+/* a:hover {
+    background-color: #04445a;
+}*/

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="alert-container">
+    <div class="alert alert-danger">
+        <h2>Confirmar Eliminación</h2>
+        <p>¿Está seguro que desea eliminar la nómina #{{ nomina.id_nomina }}?</p>
+        <p><strong>Empleado:</strong> {{ nomina.id_empleado }}</p>
+        <p><strong>Período:</strong> {{ nomina.periodo }}</p>
+
+        <form method="post" class="confirmation-form">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+                <a href="{% url 'home' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
