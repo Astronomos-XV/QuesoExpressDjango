@@ -51,18 +51,16 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
-# settings.py
 
-# Configuración de archivos estáticos
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ¡Añade esta línea!
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'secundario/static'),  # Asegúrate de que esta ruta sea correcta
+    os.path.join(BASE_DIR, 'secundario/static'), 
 ]
 
 
-LOGIN_URL = 'login'  # Asegúrate de usar el nombre correcto de la URL que has configurado  
-LOGIN_REDIRECT_URL = 'home'  # La vista a la que se redirige tras el inicio de sesión  
+LOGIN_URL = 'login'  
+LOGIN_REDIRECT_URL = 'home'  
 
 ROOT_URLCONF = 'principal.urls'
 
