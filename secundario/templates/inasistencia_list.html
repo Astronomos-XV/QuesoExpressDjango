@@ -1,0 +1,56 @@
+{% extends 'home.html' %} {% block content %}
+
+<h2>Registro de Asistencias</h2>
+
+<div class="button-group">
+    <a href="{% url 'inasistencia_create' %}" class="btn btn-primary mb-3">Registrar Nueva Inasistencia</a>
+    <a href="{% url 'asistencia_confirmada_list' %}" class="btn btn-primary mb-3">Ver asistencias confirmadas</a>
+
+
+
+</div>
+
+
+
+
+{% if inasistencias %}
+<div class="table-container">
+    <table class="nomina-table ">
+
+        <thead>
+            <tr>
+                <th>Empleado</th>
+                <th>Fecha de Inasistencia</th>
+                <th>Tipo de Inasistencia</th>
+                <th>Observaciones</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inasistencia in inasistencias %}
+            <tr>
+                <td>{{ inasistencia.id_empleado.nombre }} {{ inasistencia.id_empleado.apellido }}</td>
+                <td>{{ inasistencia.fecha_asistencia|date:"d/m/Y" }}</td>
+                <td>{{ inasistencia.get_tipo_inasistencia_display }}</td>
+
+                <td>{{ inasistencia.observaciones|default:"N/A" }}</td>
+                <td>
+                    <a href="{% url 'inasistencia_edit' inasistencia.id_asistencia %}"
+                        class="btn btn-sm btn-warning">Editar</a>
+                    <a href="{% url 'inasistencia_delete' inasistencia.id_asistencia %}"
+                        class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+    <p class="alert alert-warning">No hay inasistencias registradas.</p>
+    {% endif %}
+</div>
+
+
+
+
+{% endblock %}

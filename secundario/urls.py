@@ -21,4 +21,16 @@ urlpatterns = [
     path('sueldos/eliminar/<int:id_sueldo>/', views.sueldo_eliminar, name='sueldo_eliminar'),
     path('gestion-datos/', views.gestion_datos, name='gestion_datos'),
     path('tasas/', views.actualizar_y_listar_tasas, name='tasa'),
+    #path('asistencias/', views.AsistenciaListView.as_view(), name='lista_asistencias'),
+   # path('asistencias/toggle/<int:pk>/', views.toggle_asistencia, name='toggle_asistencia'),
+    #path('asistencias/registrar/', views.registrar_asistencias, name='registrar_asistencias'),
+    path('nomina/grupal/', views.generar_nomina_grupal, name='generar_nomina_grupal'), # Nueva URL
+    path('inasistencias/', views.inasistencia_list, name='inasistencia_list'),
+    path('inasistencias/crear/', views.inasistencia_create, name='inasistencia_create'),
+    path('inasistencias/editar/<int:id_asistencia>/', views.inasistencia_edit, name='inasistencia_edit'),
+    path('inasistencias/eliminar/<int:id_asistencia>/', views.inasistencia_delete, name='inasistencia_delete'),
+    path('nomina/pdf/<int:id_nomina>/', views.exportar_nomina_pdf, name='exportar_nomina_pdf'),
+    path('registrar_asistencia_diaria/', views.registrar_asistencia_diaria, name='registrar_asistencia_diaria'),
+    path('asistencias/confirmadas/', views.asistencia_confirmada_list, name='asistencia_confirmada_list'),
+    path('sueldos/grupal/', views.generar_sueldo_grupal, name='generar_sueldo_grupal'),
 ]

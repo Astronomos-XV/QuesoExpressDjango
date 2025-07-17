@@ -10,7 +10,6 @@ body {
 
 h1.titulo-principal {
     text-align: center !important;
-    /* !important temporal para forzar el cambio */
     color: #00BCD4;
     margin: 20px auto;
     width: 100%;
@@ -27,12 +26,11 @@ h1.titulo-principal {
 
 .table-responsive {
     overflow-x: auto;
-    /* Permite el desplazamiento horizontal */
+
 }
 
 table {
     width: 100%;
-    /* Ancho completo */
     border-collapse: collapse;
     margin-top: 20px;
 }
@@ -42,10 +40,8 @@ td {
     padding: 5px;
     border: 1px solid #dee2e6;
     text-align: left;
-    /* Permite que las palabras largas se dividan */
     word-wrap: break-word;
     max-width: 150px;
-    /* Limita el ancho de cada celda */
 }
 
 th {
@@ -63,7 +59,7 @@ tr:hover {
 
 .btn {
     display: inline-block;
-    color: white;
+
     text-decoration: none;
     padding: 10px 15px;
     border-radius: 5px;
@@ -123,7 +119,7 @@ tr:hover {
 
 
 .btn-home:hover {
-    background-color: #032930;
+    background-color: #037386;
     transform: scale(1.05);
 }
 

@@ -1,41 +1,50 @@
 {% extends 'empleadopagina.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Resultados de búsqueda</h2>
-    {% if cedula_buscada %}
-    <p>Mostrando nóminas para cédula: <strong>{{ cedula_buscada }}</strong></p>
-    {% endif %}
 
-    {% if nominas %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID Nómina</th>
-                <th>Empleado</th>
-                <th>Período</th>
-                <th>Sueldo Neto</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for nomina in nominas %}
-            <tr>
-                <td>{{ nomina.id_nomina }}</td>
-                <td>{{ nomina.id_empleado.nombre }} {{ nomina.id_empleado.apellido }}</td>
-                <td>{{ nomina.periodo }}</td>
-                <td>{{ nomina.sueldo_neto_bs }} Bs</td>
-                <td>
 
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <div class="alert alert-info">
-        No se encontraron nóminas para la cédula proporcionada.
+<section class="layout">
+    <div class="header"></div>
+    <div class="main">
+        <h2>Resultados de búsqueda</h2>
+        {% if cedula_buscada %}
+        <p>Mostrando nóminas para cédula: <strong>{{ cedula_buscada }}</strong></p>
+        {% endif %}
+
+        {# Se remueve el formulario de búsqueda de cédula si estaba aquí #}
+        {# para usuarios empleados, ya que la información se carga automáticamente. #}
+        {# Si un administrador necesita buscar por cédula, se puede mantener un formulario condicional. #}
+
+        {% if nominas %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID Nómina</th>
+                    <th>Empleado</th>
+                    <th>Período</th>
+                    <th>Sueldo Neto</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for nomina in nominas %}
+                <tr>
+                    <td>{{ nomina.id_nomina }}</td>
+                    <td>{{ nomina.id_empleado.nombre }} {{ nomina.id_empleado.apellido }}</td>
+                    <td>{{ nomina.periodo_inicio|date:"d/m/Y" }} - {{ nomina.periodo_fin|date:"d/m/Y" }}</td>
+                    <td>{{ nomina.sueldo_neto_bs|floatformat:2 }} Bs</td>
+                    <td>
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">
+            No se encontraron nóminas para la cédula proporcionada.
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
-</div>
+</section>
 {% endblock %}

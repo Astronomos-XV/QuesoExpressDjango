@@ -1,10 +1,11 @@
 from django.contrib.auth.models import User  
-from django.db import models 
+from django.db import models
+from django.utils import timezone
 
 class Usuarios(models.Model):  
     user = models.OneToOneField(User, on_delete=models.CASCADE)  
     puesto = models.CharField(max_length=100)
-
+    empleado = models.OneToOneField('Empleado', on_delete=models.CASCADE, null=True, blank=True, related_name='user_account')
     def __str__(self):  
         return self.user.username 
 
@@ -40,17 +41,19 @@ class Labor(models.Model):
 
 class Empleado(models.Model):  
     id_empleado = models.AutoField(primary_key=True)  
-    cedula = models.CharField(max_length=15, unique=True, null=False, blank=False)
+    cedula = models.CharField(max_length=10, unique=True, null=False, blank=False,)
     nombre = models.CharField(max_length=100)  
     apellido = models.CharField(max_length=100)
-    telefono = models.CharField(max_length=15, blank=True, null=True)  
+    telefono = models.CharField(max_length=11, blank=True, null=True,)  
     correo = models.EmailField(blank=True, null=True)  
     fecha_contratacion = models.DateField()  
     id_depa = models.ForeignKey(Departamento, on_delete=models.CASCADE)  
     id_pro = models.ForeignKey(Profesion, on_delete=models.CASCADE)  
     id_trabajo = models.ForeignKey(Labor, on_delete=models.CASCADE)  
-    id_jornada = models.ForeignKey(TipoDeJornada, on_delete=models.CASCADE)  
+    id_jornada = models.ForeignKey(TipoDeJornada, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.nombre} {self.apellido}" 
 
 
 class Tasa(models.Model):
@@ -61,8 +64,6 @@ class Tasa(models.Model):
     
     def __str__(self):
         return f"Tasa {self.fecha} - {self.valor_tasa}"
-
-
 
 
 class Sueldo(models.Model):
@@ -78,13 +79,56 @@ class Sueldo(models.Model):
             self.sueldo_bs = self.id_jornada.sueldo_semanal_usd * self.id_tasa.valor_tasa
         super().save(*args, **kwargs)
 
+class PrestacionSocialAcumulada(models.Model):
+    """
+    Modelo para registrar el historial de depósitos y cálculos de intereses de prestaciones sociales.
+    """
+    TIPO_MOVIMIENTO_CHOICES = [
+        ('DEPOSITO', 'Depósito Trimestral'),
+        ('INTERESES', 'Intereses Anuales'),
+        ('LIQUIDACION', 'Liquidación'),
+    ]
+
+    id_prestacion_social = models.AutoField(primary_key=True)
+    id_empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, verbose_name="Empleado")
+    fecha_movimiento = models.DateField(default=timezone.now, verbose_name="Fecha Movimiento")
+    tipo_movimiento = models.CharField(max_length=20, choices=TIPO_MOVIMIENTO_CHOICES,
+                                      verbose_name="Tipo de Movimiento")
+    monto_bs = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Monto (Bs)")
+    saldo_anterior_bs = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Saldo Anterior (Bs)")
+    saldo_actual_bs = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Saldo Actual (Bs)")
+    periodo_inicio = models.DateField(null=True, blank=True, verbose_name="Período Inicio (para Depósito)")
+    periodo_fin = models.DateField(null=True, blank=True, verbose_name="Período Fin (para Depósito)")
+    descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción")
+
+    class Meta:
+        verbose_name = "Prestación Social Acumulada"
+        verbose_name_plural = "Prestaciones Sociales Acumuladas"
+        ordering = ['-fecha_movimiento', 'id_empleado']
+
+    def __str__(self):
+        return f"{self.id_empleado.nombre} {self.id_empleado.apellido} - {self.tipo_movimiento} ({self.fecha_movimiento}): {self.monto_bs:.2f} Bs"
+
+
+
+
 class Nomina(models.Model):
+    TIPO_PERIODO_CHOICES = [
+        ('semanal', 'Semanal'),
+        ('quincenal', 'Quincenal'),
+        ('mensual', 'Mensual'),
+    ]
+
     id_nomina = models.AutoField(primary_key=True)
     id_empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
+    id_trabajo = models.ForeignKey(Labor, on_delete=models.CASCADE)
     id_sueldo = models.ForeignKey(Sueldo, on_delete=models.CASCADE)
-    periodo = models.DateField()
+    periodo_inicio = models.DateField(verbose_name="Fecha de Inicio del Período")
+    periodo_fin = models.DateField(verbose_name="Fecha de Fin del Período")
+    tipo_periodo = models.CharField(max_length=10, choices=TIPO_PERIODO_CHOICES, default='quincenal')
     sueldo_bs_base = models.DecimalField(max_digits=15, decimal_places=2)
     cestaticket_bs = models.DecimalField(max_digits=15, decimal_places=2)
+    pago_prestaciones_bs = models.DecimalField(max_digits=15, decimal_places=2, default=0.00) 
     horas_extras = models.IntegerField(default=0)
     horas_ordinarias = models.DecimalField(max_digits=5, decimal_places=2)
     pago_horas_extras_bs = models.DecimalField(max_digits=15, decimal_places=2)
@@ -98,7 +142,52 @@ class Nomina(models.Model):
     faov_bs = models.DecimalField(max_digits=15, decimal_places=2)
     total_deducciones_bs = models.DecimalField(max_digits=15, decimal_places=2)
     sueldo_neto_bs = models.DecimalField(max_digits=15, decimal_places=2)
-    fecha_emision = models.DateField()
+    fecha_emision = models.DateField(auto_now_add=True) 
+
+    def __str__(self):
+        return f"Nómina {self.id_nomina} - {self.id_empleado.nombre} {self.periodo_inicio} a {self.periodo_fin}" 
+
+
+class Asistencia(models.Model):
+    TIPO_INASISTENCIA_CHOICES = [
+        ('justificada', 'Justificada'),
+        ('injustificada', 'Injustificada'),
+        ('enfermedad', 'Enfermedad'),
+        ('vacaciones', 'Vacaciones'),
+        ('permiso', 'Permiso'),
+    ]
+    
+    id_asistencia = models.AutoField(primary_key=True)
+    id_empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, verbose_name="Empleado")
+    fecha_asistencia = models.DateField(verbose_name="Fecha de Asistencia")
+    asistio = models.BooleanField(default=False, verbose_name="Asistió")
+    tipo_inasistencia = models.CharField(
+        max_length=20, 
+        choices=TIPO_INASISTENCIA_CHOICES, 
+        blank=True, 
+        null=True,
+        verbose_name="Tipo de inasistencia"
+    )
+    observaciones = models.TextField(blank=True, null=True, verbose_name="Observaciones")
+    
+    class Meta:
+        verbose_name = "Asistencia"
+        verbose_name_plural = "Asistencias"
+        unique_together = ('id_empleado', 'fecha_asistencia')
     
     def __str__(self):
-        return f"Nómina {self.id_nomina} - {self.id_empleado.nombre} {self.periodo}" 
+        return f"{self.id_empleado.nombre} - {self.fecha_asistencia} - {'Sí' if self.asistio else 'No'}"
+    
+
+class Asistenciaconfirmada(models.Model):
+    id_asistencia = models.AutoField(primary_key=True)
+    id_empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
+    asistio = models.BooleanField(default=False) 
+    fecha_asistencia = models.DateField(default=timezone.localdate) 
+    hora_entrada = models.TimeField(null=True, blank=True) 
+    hora_salida = models.TimeField(null=True, blank=True)
+    def __str__(self):
+        return f"Asistencia de {self.id_empleado.nombre} el {self.fecha_asistencia}" 
+
+    class Meta:
+        unique_together = ('id_empleado', 'fecha_asistencia', 'asistio')

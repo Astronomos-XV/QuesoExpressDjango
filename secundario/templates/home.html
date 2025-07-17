@@ -10,84 +10,163 @@
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
     <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
     <script src="{% static 'js/home.js' %}" defer></script>
+
+    <style>
+        .table-container {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 1200px;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-x: auto;
+        }
+
+        .nomina-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .nomina-table th,
+        .nomina-table td {
+            white-space: nowrap;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .layout .main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+    </style>
 </head>
 
 <body>
-    {% include 'includes/navbar.html' %}
+    <section class="layout">
+        <div class="header"> {% include 'includes/navbar.html' %}</div>
+        <div class="main">
+            <main>
+                {% block content %}
+                <h1>Bienvenido a Queso Express</h1>
+                <p class="bold">Aquí puede encontrar los empleados de la empresa</p>
+                <div class="button-group">
+                    <a class="btn" href="{% url 'crear_empleado' %}">Registrar Empleados</a>
+                    <a class="btn" href="{% url 'listar_empleados' %}">Mostrar Listado de Empleados</a>
+                    <a class="btn" href="{% url 'generar_nomina_grupal' %}">Generar Nominas</a>
+                    <a class="btn" href="{% url 'sueldo_lista' %}">Ver Sueldos</a>
+                    <a class="btn" href="{% url 'tasa' %}">Ver Tasas</a>
+                </div>
+                <div class="table-container">
+                    <h2 class="table-title">Lista de Nominas</h2>
+                    <table class="nomina-table">
+                        <thead>
+                            <tr>
+                                <th>ID Nómina</th>
+                                <th>Empleado</th>
+                                <th>Labor</th>
+                                <th>Período</th>
+                                <th>Sueldo Base (Bs)</th>
+                                <th>Cestaticket (Bs)</th>
+                                <th> Prestaciones (Bs)</th>
+                                <th>Horas Extras</th>
+                                <th>Pago Extras (Bs)</th>
+                                <th>Horas Festivas</th>
+                                <th>Pago Festivas (Bs)</th>
+                                <th>Total Asignaciones (Bs)</th>
+                                <th>Total Deducciones (Bs)</th>
+                                <th>Sueldo Neto (Bs)</th>
+                                <th>Fecha Emisión</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for nomina in nominas %}
+                            <tr>
+                                <td>{{ nomina.id_nomina }}</td>
+                                <td>{{ nomina.id_empleado.nombre }} {{ nomina.id_empleado.apellido }}</td>
 
-    <main>
-        {% block content %}
-        <h1>Bienvenido a Queso Express</h1>
-        <p class="bold">Aquí puede encontrar los empleados de la empresa</p>
-        <div class="button-group">
-            <a class="btn" href="{% url 'crear_empleado' %}">Registrar Empleados</a>
-            <a class="btn" href="{% url 'listar_empleados' %}">Mostrar Listado de Empleados</a>
-            <a class="btn" href="{% url 'crear_nomina' %}">Crear Nueva Nómina</a>
-            <a class="btn" href="{% url 'sueldo_lista' %}">Ver Sueldos</a>
-            <a class="btn" href="{% url 'tasa' %}">Ver Tasas</a>
+                                <td>{{ nomina.id_trabajo.nombre_trabajo }}</td>
+                                <td>{{ nomina.tipo_periodo }}</td>
+                                <td>{{ nomina.sueldo_bs_base }}</td>
+                                <td>{{ nomina.cestaticket_bs }}</td>
+                                <td>{{ nomina.pago_prestaciones_bs }}</td>
+                                <td>{{ nomina.horas_extras }}</td>
+                                <td>{{ nomina.pago_horas_extras_bs }}</td>
+                                <td>{{ nomina.horas_festivas }}</td>
+                                <td>{{ nomina.pago_horas_festivas_bs }}</td>
+                                <td>{{ nomina.total_asignaciones_bs }}</td>
+                                <td>{{ nomina.total_deducciones_bs }}</td>
+                                <td>{{ nomina.sueldo_neto_bs }}</td>
+                                <td>{{ nomina.fecha_emision }}</td>
+                                <td class="action-buttons">
+                                    <div>
+                                        <a href="{% url 'editar_nomina' nomina.id_nomina %}" class="btn btn-warning">
+                                            Editar
+                                        </a>
+                                        <a href="{% url 'eliminar_nomina' nomina.id_nomina %}" class="btn btn-danger"
+                                            onclick="return confirm('¿Está seguro de eliminar esta nómina?');">
+                                            Eliminar
+                                        </a>
+                                        <a href="{% url 'exportar_nomina_pdf' nomina.id_nomina %}"
+                                            class="btn btn-primary">Exportar
+                                            a PDF</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="15">No hay nóminas registradas.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    {% if nominas.has_other_pages %}
+
+                    <div class="button-group">
+
+                        {% if nominas.has_previous %}
+                        <a class="btn" href="?page=1">&laquo; Primera</a>
+                        {% endif %}
+
+                        {% if nominas.has_previous %}
+                        <a class="btn" href="?page={{ nominas.previous_page_number }}">Anterior</a>
+                        {% endif %}
+
+                        <div class="btn btn-info">
+                            <strong>Página {{ nominas.number }} de {{ nominas.paginator.num_pages }}.</strong>
+                        </div>
+                        {% if nominas.has_next %}
+                        <a class="btn" href="?page={{ nominas.next_page_number }}">Siguiente</a>
+                        {% endif %}
+
+                        {% if nominas.has_next %}
+                        <a class="btn" href="?page={{ nominas.paginator.num_pages }}">Última &raquo;</a>
+                        {% endif %}
+                    </div>
+
+                    {% endif %}
+
+
+                </div>
+                {% endblock %}
+            </main>
         </div>
-
-        <div class="table-container">
-            <h2 class="table-title">Lista de Nominas</h2>
-            <table class="nomina-table">
-                <thead>
-                    <tr>
-                        <th>ID Nómina</th>
-                        <th>Empleado</th>
-                        <th>Período</th>
-                        <th>Sueldo Base (Bs)</th>
-                        <th>Cestaticket (Bs)</th>
-                        <th>Horas Extras</th>
-                        <th>Pago Extras (Bs)</th>
-                        <th>Horas Festivas</th>
-                        <th>Pago Festivas (Bs)</th>
-                        <th>Total Asignaciones (Bs)</th>
-                        <th>Total Deducciones (Bs)</th>
-                        <th>Sueldo Neto (Bs)</th>
-                        <th>Fecha Emisión</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for nomina in nominas %}
-                    <tr>
-                        <td>{{ nomina.id_nomina }}</td>
-                        <td>{{ nomina.id_empleado.nombre }} {{ nomina.id_empleado.apellido }}</td>
-                        <td>{{ nomina.periodo }}</td>
-                        <td>{{ nomina.sueldo_bs_base }}</td>
-                        <td>{{ nomina.cestaticket_bs }}</td>
-                        <td>{{ nomina.horas_extras }}</td>
-                        <td>{{ nomina.pago_horas_extras_bs }}</td>
-                        <td>{{ nomina.horas_festivas }}</td>
-                        <td>{{ nomina.pago_horas_festivas_bs }}</td>
-                        <td>{{ nomina.total_asignaciones_bs }}</td>
-                        <td>{{ nomina.total_deducciones_bs }}</td>
-                        <td>{{ nomina.sueldo_neto_bs }}</td>
-                        <td>{{ nomina.fecha_emision }}</td>
-                        <td class="action-buttons">
-                            <div>
-                                <a href="{% url 'editar_nomina' nomina.id_nomina %}" class="btn btn-warning">
-                                    Editar
-                                </a>
-                                <a href="{% url 'eliminar_nomina' nomina.id_nomina %}" class="btn btn-danger"
-                                    onclick="return confirm('¿Está seguro de eliminar esta nómina?');">
-                                    Eliminar
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="14">No hay nóminas registradas.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% endblock %}
-    </main>
-
-    <script src="{% static 'js/navbar.js' %}"></script>
+        <div class="footer"></div>
+    </section>
+    <div>
+        <script src="{% static 'js/navbar.js' %}"></script>
+    </div>
 </body>
 
 </html>

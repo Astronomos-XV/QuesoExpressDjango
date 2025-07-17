@@ -13,56 +13,103 @@
 </head>
 
 <body>
-    {% include 'includes/navbar.html' %}
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
 
-    <div class="container">
-        <div class="table-responsive">
-            <table>
-                <tr>
-                    <th>ID</th>
-                    <th>Cedula</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Telefono</th>
-                    <th>Correo</th>
-                    <th>Fecha de Contratación</th>
-                    <th>Departamento</th>
-                    <th>Profesión</th>
-                    <th>Labor</th>
-                    <th>Jornada</th>
-                    <th>Acciones</th>
-                </tr>
-                {% for empleado in empleados %}
-                <tr>
-                    <td>{{ empleado.id_empleado }}</td>
-                    <td>{{ empleado.cedula }}</td>
-                    <td>{{ empleado.nombre }}</td>
-                    <td>{{ empleado.apellido }}</td>
-                    <td>{{ empleado.telefono }}</td>
-                    <td>{{ empleado.correo }}</td>
-                    <td>{{ empleado.fecha_contratacion }}</td>
-                    <td>{{ empleado.id_depa }}</td>
-                    <td>{{ empleado.id_pro }}</td>
-                    <td>{{ empleado.id_trabajo }}</td>
-                    <td>{{ empleado.id_jornada}}</td>
-                    <td>
-                        <a class="btn btn-editar" href="{% url 'editar_empleado' empleado.id_empleado %}"><i
-                                class="fas fa-edit"></i> Editar</a>
-                        <a class="btn btn-eliminar" href="{% url 'eliminar_empleado' empleado.id_empleado %}"><i
-                                class="fas fa-trash"></i> Eliminar</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
+
+    <section class="layout">
+        <div class="header"> {% include 'includes/navbar.html' %}</div>
+        <div class="main">
+            <main>
+                {% block content %}{% endblock %}
+            </main>
+
+            <div class="container">
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cedula</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Telefono</th>
+                            <th>Correo</th>
+                            <th>Fecha de Contratación</th>
+                            <th>Departamento</th>
+                            <th>Profesión</th>
+                            <th>Labor</th>
+                            <th>Jornada</th>
+                            <th>Acciones</th>
+                        </tr>
+                        {% for empleado in empleados %}
+                        <tr>
+                            <td>{{ empleado.id_empleado }}</td>
+                            <td>{{ empleado.cedula }}</td>
+                            <td>{{ empleado.nombre }}</td>
+                            <td>{{ empleado.apellido }}</td>
+                            <td>{{ empleado.telefono }}</td>
+                            <td>{{ empleado.correo }}</td>
+                            <td>{{ empleado.fecha_contratacion }}</td>
+
+                            <td>{{ empleado.id_depa.nombre_depa }}</td>
+
+                            <td>{{ empleado.id_pro.nombre_pro }}</td>
+                            <td>{{ empleado.id_trabajo.nombre_trabajo }}</td>
+                            <td>{{ empleado.id_jornada.nombre_jornada }}</td>
+                            <td>
+                                <a class="btn btn-editar" href="{% url 'editar_empleado' empleado.id_empleado %}">
+                                    Editar</a>
+                                <a class="btn btn-eliminar" href="{% url 'eliminar_empleado' empleado.id_empleado %}">
+                                    Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+                {# Bloque de Paginación INICIAR #}
+                {% if empleados.has_other_pages %} {# Este es más robusto, verifica si hay más de 1 página #}
+                <div class="button-group">
+                    <span class="step-links">
+                        {# Enlace a la primera página #}
+                        {% if empleados.has_previous %}
+                        <a class="btn" href="?page=1">&laquo; Primera</a>
+                        {% endif %}
+
+                        {# Enlace a la página anterior #}
+                        {% if empleados.has_previous %}
+                        <a class="btn" href="?page={{ empleados.previous_page_number }}">Anterior</a>
+                        {% endif %}
+
+                        <span class="btn btn-info">
+                            <strong>Página {{ empleados.number }} de {{ empleados.paginator.num_pages }}.</strong>
+                        </span>
+
+                        {# Enlace a la página siguiente #}
+                        {% if empleados.has_next %}
+                        <a class="btn" href="?page={{ empleados.next_page_number }}">Siguiente</a>
+                        {% endif %}
+
+                        {# Enlace a la última página #}
+                        {% if empleados.has_next %}
+                        <a class="btn" href="?page={{ empleados.paginator.num_pages }}">Última &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+                {% endif %}
+                {# Bloque de Paginación FIN #}
+
+                <a href="{% url 'crear_empleado' %}" class="btn btn-nuevo"><i class="fas fa-plus-circle"></i> Nuevo
+                    Empleado</a>
+                <a href="{% url 'home' %}" class="btn btn-home"> Inicio</a>
+            </div>
+            <script src="{% static 'js/navbar.js' %}"></script>
+
+            {# Estilos básicos para la paginación (puedes mover esto a tu CSS si lo prefieres) #}
         </div>
-        <a href="{% url 'crear_empleado' %}" class="btn btn-nuevo"><i class="fas fa-plus-circle"></i> Nuevo Empleado</a>
-        <a href="{% url 'home' %}" class="btn btn-home"> Inicio</a>
-    </div>
-    <script src="{% static 'js/navbar.js' %}"></script>
+        <div class="footer">3</div>
+    </section>
+
+
 </body>
 
 </html>

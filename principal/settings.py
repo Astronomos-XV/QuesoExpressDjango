@@ -51,18 +51,18 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
+# settings.py
 
-
-
+# Configuración de archivos estáticos
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ¡Añade esta línea!
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'secundario/static'), 
+    os.path.join(BASE_DIR, 'secundario/static'),  # Asegúrate de que esta ruta sea correcta
 ]
 
 
-LOGIN_URL = 'login'  
-LOGIN_REDIRECT_URL = 'home'  
+LOGIN_URL = 'login'  # Asegúrate de usar el nombre correcto de la URL que has configurado  
+LOGIN_REDIRECT_URL = 'home'  # La vista a la que se redirige tras el inicio de sesión  
 
 ROOT_URLCONF = 'principal.urls'
 
@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'principal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'nominas',
+        'NAME': 'nominastry',
         'USER': 'postgres',
         'PASSWORD': 'admin',
         'HOST': 'localhost',
@@ -122,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Caracas'
 
 USE_I18N = True
 

@@ -1,0 +1,178 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block title %}Listado de Asistencias Confirmadas{% endblock %}
+
+{% block content %}
+<style>
+    .table-container {
+        margin: 20px auto;
+        max-width: 1200px;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .filtros {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .filtros .form-group {
+        margin-bottom: 10px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #0092ac;
+        color: white;
+        position: sticky;
+        top: 0;
+    }
+
+    tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 3px;
+        font-size: 12px;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .badge-warning {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .pagination {
+        margin-top: 20px;
+    }
+</style>
+
+<div class="table-container">
+    <h2>Listado de Asistencias Confirmadas</h2>
+
+    <div class="filtros">
+        <form method="get">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="fecha_desde">Desde:</label>
+                        <input type="date" id="fecha_desde" name="fecha_desde" value="{{ filtros.fecha_desde }}"
+                            class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="fecha_hasta">Hasta:</label>
+                        <input type="date" id="fecha_hasta" name="fecha_hasta" value="{{ filtros.fecha_hasta }}"
+                            class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="cedula">Cédula:</label>
+                        <input type="text" id="cedula" name="cedula" value="{{ filtros.cedula }}" class="form-control"
+                            placeholder="Buscar por cédula">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" name="nombre" value="{{ filtros.nombre }}" class="form-control"
+                            placeholder="Buscar por nombre">
+                    </div>
+                </div>
+            </div>
+            <div class="button-group">
+                <div>
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                </div>
+                <a href="{% url 'asistencia_confirmada_list' %}" class="btn btn-secondary">Limpiar</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Empleado</th>
+                    <th>Cédula</th>
+                    <th>Hora Entrada</th>
+                    <th>Hora Salida</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asistencia in asistencias_confirmadas %}
+                <tr>
+                    <td>{{ asistencia.fecha_asistencia|date:"d/m/Y" }}</td>
+                    <td>{{ asistencia.id_empleado.apellido }}, {{ asistencia.id_empleado.nombre }}</td>
+                    <td>{{ asistencia.id_empleado.cedula }}</td>
+                    <td>{{ asistencia.hora_entrada|default:"--:--"|time:"H:i" }}</td>
+                    <td>{{ asistencia.hora_salida|default:"--:--"|time:"H:i" }}</td>
+                    <td>
+                        {% if asistencia.hora_entrada and asistencia.hora_salida %}
+                        <span class="badge badge-success">Completa</span>
+                        {% elif asistencia.hora_entrada %}
+                        <span class="badge badge-warning">Solo entrada</span>
+                        {% else %}
+                        <span class="badge badge-danger">Sin registrar</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">No se encontraron asistencias con los filtros aplicados</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if is_paginated %}
+    <div class="pagination">
+        <span class="page-links">
+            {% if page_obj.has_previous %}
+            <a
+                href="?page={{ page_obj.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Anterior</a>
+            {% endif %}
+            <span class="page-current">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+            </span>
+            {% if page_obj.has_next %}
+            <a
+                href="?page={{ page_obj.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Siguiente</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

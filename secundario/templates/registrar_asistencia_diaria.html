@@ -1,0 +1,89 @@
+{% extends 'basamento.html' %}
+{% load static %}
+
+{% block title %}Registrar Asistencia{% endblock %}
+
+{% block content %}
+
+<div class="card-container">
+    <div class="card">
+        <h2>Registrar Asistencia</h2>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                {% endfor %}
+        </ul>
+        {% endif %}
+
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="cedula">Cédula del Empleado:</label>
+                <input type="text" id="cedula" name="cedula" value="{{ cedula_buscada }}" disabled>
+            </div>
+            <!--<button type="submit" name="buscar_cedula" class="btn btn-primary">Buscar Empleado</button>-->
+            <a href="{% url 'buscar_nomina' %}" class="btn btn-primary">Volver al Buscador de Nominas</a>
+        </form>
+
+
+        {% if empleado_encontrado %}
+        <div class="empleado-info">
+            <p><strong>Empleado:</strong> {{ empleado_encontrado.nombre }} {{ empleado_encontrado.apellido }}</p>
+            <p><strong>Cédula:</strong> {{ empleado_encontrado.cedula }}</p>
+
+            {% if asistencia_hoy %}
+            <div class="asistencia-status
+                    {% if asistencia_hoy.hora_entrada and asistencia_hoy.hora_salida %}status-completo
+                    {% elif asistencia_hoy.hora_entrada %}status-entrada
+                    {% else %}status-pendiente{% endif %}">
+                <div class="centrar-texto">
+                    <h3> <strong>Estado actual</strong> </h3>
+                    <h3> Entrada: {{ asistencia_hoy.hora_entrada|default:"No registrada"|time:"H:i" }}</h4>
+                        <h3>Salida: {{ asistencia_hoy.hora_salida|default:"No registrada"|time:"H:i" }}</h4>
+                </div>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="empleado_cedula_confirmar" value="{{ empleado_encontrado.cedula }}">
+                <div class="button-group">
+                    {% if not asistencia_hoy.hora_entrada %}
+                    <button type="submit" name="registrar_entrada" class="btn btn-success">
+                        Registrar Entrada {{ hora_actual|time:"H:i" }}
+                    </button>
+                    {% elif not asistencia_hoy.hora_salida %}
+                    <button type="submit" name="registrar_salida" class="btn btn-warning">
+                        Registrar Salida ({{ hora_actual|time:"H:i" }})
+                    </button>
+                    {% else %}
+                    <div class="centrar-texto">
+                        <p class="asistencia-status status-completo">
+                            Asistencia completa registrada hoy
+                        </p>
+                    </div>
+
+                    {% endif %}
+                </div>
+            </form>
+            {% else %}
+            <div class="asistencia-status status-pendiente">
+                <p>No hay registro de asistencia para hoy</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="button-group">
+                    <input type="hidden" name="empleado_cedula_confirmar" value="{{ empleado_encontrado.cedula }}">
+                    <button type="submit" name="registrar_entrada" class="btn btn-success">
+                        Registrar Entrada {{ hora_actual|time:"H:i" }}
+                    </button>
+                </div>
+            </form>
+            {% endif %}
+        </div> {# Closes empleado-info div #}
+        {% endif %}
+    </div> {# Closes card div #}
+</div> {# Closes card-container div #}
+{% endblock %}

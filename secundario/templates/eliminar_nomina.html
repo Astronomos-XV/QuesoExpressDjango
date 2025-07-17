@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'home.html' %}
 
 {% block content %}
 <div class="alert-container">
@@ -10,7 +10,7 @@
 
         <form method="post" class="confirmation-form">
             {% csrf_token %}
-            <div class="form-actions">
+            <div class="button-group">
                 <button type="submit" class="btn btn-danger">Eliminar</button>
                 <a href="{% url 'home' %}" class="btn btn-secondary">Cancelar</a>
             </div>

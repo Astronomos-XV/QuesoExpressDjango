@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Recibo de Nómina</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            /* Restauramos un padding más estándar para la legibilidad en la primera página */
+            color: #333;
+            background-color: #f4f4f4;
+            font-size: 11pt;
+            /* Restauramos un tamaño de fuente más legible */
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            background-color: #e0e0e0;
+            border-bottom: 2px solid #2c3e50;
+            font-size: 20pt;
+            /* Tamaño de fuente más grande para el título */
+        }
+
+        h2 {
+            font-size: 16pt;
+            /* Tamaño de fuente para subtítulos */
+            color: #2c3e50;
+            margin-top: 25px;
+            /* Margen superior para subtítulos */
+            margin-bottom: 15px;
+            /* Margen inferior para subtítulos */
+        }
+
+        .header {
+            margin-bottom: 30px;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            font-size: 11pt;
+            /* Tamaño de fuente para celdas de tabla */
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .total {
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: right;
+            margin-top: 30px;
+            padding: 10px 0;
+            border-top: 2px solid #2c3e50;
+            color: #2c3e50;
+        }
+
+        .signature {
+            margin-top: 50px;
+            border-top: 1px solid #000;
+            width: 250px;
+            text-align: center;
+            padding-top: 15px;
+            font-style: italic;
+            color: #555;
+            font-size: 10.5pt;
+        }
+
+        /* --- NUEVAS REGLAS PARA SALTOS DE PÁGINA --- */
+        /* Fuerza un salto de página antes del h2 de Asignaciones */
+        h2:first-of-type {
+            /* Selecciona el primer h2 (Asignaciones) */
+            page-break-before: always;
+            margin-top: 0;
+            /* Resetear margen superior en la nueva página */
+        }
+
+        /* Fuerza un salto de página antes del h2 de Deducciones */
+        h2:nth-of-type(2) {
+            /* Selecciona el segundo h2 (Deducciones) */
+            page-break-before: always;
+            margin-top: 0;
+            /* Resetear margen superior en la nueva página */
+        }
+
+        /* --- FIN NUEVAS REGLAS --- */
+
+        /* Márgenes generales para todas las páginas del PDF */
+        @page {
+            size: A4;
+            /* O Letter, según tu preferencia */
+            margin: 20mm;
+            /* Márgenes estándar para legibilidad */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Recibo de Nómina</h1>
+        <p style="text-align: center; color: #555;">Queso Express C.A.</p>
+    </div>
+    <div class="container">
+        <div class="nomina-container">
+            <p><strong>Empleado:</strong> {{ nomina.id_empleado.nombre }} {{ nomina.id_empleado.apellido }}</p>
+            <p><strong>ID Nómina:</strong> {{ nomina.id_nomina }}</p>
+            <p><strong>Período:</strong> {{ nomina.periodo|date:"F Y" }}</p>
+            <p><strong>Fecha de emisión:</strong> {{ nomina.fecha_emision|date:"d/m/Y" }}</p>
+        </div>
+    </div>
+
+    <h2>Asignaciones</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Concepto</th>
+                <th>Monto (Bs)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Sueldo base</td>
+                <td>{{ nomina.sueldo_bs_base|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Cestaticket</td>
+                <td>{{ nomina.cestaticket_bs|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Horas extras</td>
+                <td>{{ nomina.pago_horas_extras_bs|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Horas festivas</td>
+                <td>{{ nomina.pago_horas_festivas_bs|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td><strong>Total asignaciones</strong></td>
+                <td><strong>{{ nomina.total_asignaciones_bs|floatformat:2 }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Deducciones</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Concepto</th>
+                <th>Monto (Bs)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>IVSS</td>
+                <td>{{ nomina.ivss_bs|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>RPE</td>
+                <td>{{ nomina.rpe_bs|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>FAOV</td>
+                <td>{{ nomina.faov_bs|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td><strong>Total deducciones</strong></td>
+                <td><strong>{{ nomina.total_deducciones_bs|floatformat:2 }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="total">
+        <p>Sueldo neto: {{ nomina.sueldo_neto_bs|floatformat:2 }} Bs</p>
+    </div>
+
+    <div class="signature">
+        <p>Firma del empleado</p>
+    </div>
+</body>
+
+</html>

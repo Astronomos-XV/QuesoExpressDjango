@@ -1,0 +1,19 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<div class="container">
+
+    <h2>Generar Nómina Grupal</h2>
+
+    <div class="card">
+        <form method="post" class="clean-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Generar Nóminas</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

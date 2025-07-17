@@ -1,0 +1,26 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Eliminar Inasistencia</h1>
+    <div class="table-container">
+        <p class="card-text">
+            ¿Estás seguro de que quieres eliminar la inasistencia de
+            <strong>{{ inasistencia.id_empleado.nombre }} {{ inasistencia.id_empleado.apellido }}</strong>
+            en la fecha
+            <strong>{{ inasistencia.fecha_asistencia|date:"d/m/Y" }}</strong>?
+        </p>
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="button-group">
+                <div>
+                    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                </div>
+                <a href="{% url 'inasistencia_list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

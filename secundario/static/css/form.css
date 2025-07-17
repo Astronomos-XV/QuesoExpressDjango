@@ -1,12 +1,10 @@
-/* Mantén todos tus estilos existentes y añade/modifica estos */
-
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f8ff;
     margin: 0;
     padding: 0;
     text-align: center;
-    /* Elimina text-align: center para evitar efectos no deseados */
+
 }
 
 
@@ -18,28 +16,24 @@ h1 {
 .container {
     width: 100%;
     max-width: 500px;
-    /* Mantiene el ancho máximo */
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     padding: 30px;
     margin: 30px auto 40px;
-    /* Centrado horizontal con margen superior/inferior */
-    /* margin: [top] [horizontal] [bottom] */
 }
 
-/* Ajustes para los elementos del formulario */
+
 form {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    /* Espacio uniforme entre elementos */
+
 }
 
 label {
     display: block;
     margin-bottom: 8px;
-    /* Aumenté el espacio */
     text-align: left;
     font-weight: bold;
     color: #333;
@@ -57,13 +51,11 @@ select {
     box-sizing: border-box;
 }
 
-/* Contenedor para los botones */
+
 .botones {
     display: flex;
     justify-content: flex-end;
-    /* Alinea a la derecha */
     gap: 15px;
-    /* Espacio entre botones */
     margin-top: 20px;
 }
 
@@ -76,7 +68,7 @@ select {
     font-size: 16px;
     transition: all 0.3s;
     text-decoration: none;
-    /* Para el enlace Cancelar */
+
     text-align: center;
 }
 

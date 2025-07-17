@@ -1,0 +1,56 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>Registro de Asistencias</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="fecha">
+                <h3>Fecha:</h3>
+            </label>
+            <input type="date" name="fecha" id="fecha" value="{{ fecha|date:'Y-m-d' }}" class="form-control">
+        </div>
+
+        <table class="nomina-table">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Asistió</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for empleado in empleados %}
+                <tr>
+                    <td>{{ empleado.nombre }} {{ empleado.apellido }}</td>
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" name="asistio_{{ empleado.id }}" id="asistio_{{ empleado.id }}"
+                                class="form-check-input" {% if empleado.asistio %}checked{% endif %}>
+                            <label for="asistio_{{ empleado.id }}" class="form-check-label">
+                                {% if empleado.asistio %}Sí{% else %}No{% endif %}
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">No hay empleados registrados</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div></div>
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+                Guardar Asistencias
+        </div>
+        </button>
+</div>
+</form>
+</div>
+
+
+{% endblock %}

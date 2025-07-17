@@ -14,74 +14,94 @@
 </head>
 
 <body>
-    {% include 'includes/navbar.html' %}
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    <section class="layout">
+        <div class="header"> {% include 'includes/navbar.html' %}</div>
+        <div class="main">
+            <main>
+                {% block content %}{% endblock %}
+            </main>
 
-    <div class="container">
-        <h1>{% if form.instance.id_empleado %}Editar{% else %}Crear{% endif %} Empleado</h1>
-        <form method="POST">
-            {% csrf_token %}
+            <div class="container">
+                <h1>{% if form.instance.id_empleado %}Editar{% else %}Crear{% endif %} Empleado</h1>
+                <form method="POST">
+                    {% csrf_token %}
 
-            <div>
-                <label for="id_nombre">Nombre:</label>
-                {{ form.nombre }}
+                    <div>
+                        <label for="id_nombre">Nombre:</label>
+                        {{ form.nombre }}
+                    </div>
+
+                    <div>
+                        <label for="id_apellido">Apellido:</label>
+                        {{ form.apellido }}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.telefono.id_for_label }}">Teléfono:</label>
+                        {{ form.telefono }}
+                        {% if form.telefono.errors %}
+                        <div class="errorlist">
+                            {% for error in form.telefono.errors %}
+                            <div><strong>{{ error }}</strong></div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.cedula.id_for_label }}">Cédula:</label>
+                        {{ form.cedula }}
+                        {% if form.cedula.errors %}
+                        <div class="errorlist">
+                            {% for error in form.cedula.errors %}
+                            <div><strong>{{ error }}</strong></div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="id_correo">Correo:</label>
+                        {{ form.correo }}
+                    </div>
+
+
+                    <div>
+                        <label for="id_fecha_contratacion">Fecha de Contratación:</label>
+                        {{ form.fecha_contratacion }}
+                    </div>
+
+                    <div>
+                        <label for="id_depa">Departamento:</label>
+                        {{ form.id_depa }}
+                    </div>
+
+                    <div>
+                        <label for="id_pro">Profesión:</label>
+                        {{ form.id_pro }}
+                    </div>
+
+                    <div>
+                        <label for="id_trabajo">Labor:</label>
+                        {{ form.id_trabajo }}
+                    </div>
+
+                    <div>
+                        <label for="id_jornada">Tipo de Jornada:</label>
+                        {{ form.id_jornada }}
+                    </div>
+                    <div class="espacio">
+                        <button type="submit" class="guardar">Guardar</button>
+                    </div>
+                </form>
+
             </div>
-
-            <div>
-                <label for="id_apellido">Apellido:</label>
-                {{ form.apellido }}
-            </div>
-
-            <div>
-                <label for="id_telefono">Telefono:</label>
-                {{ form.telefono }}
-            </div>
-
-            <div>
-                <label for="id_cedula">Cedula:</label>
-                {{ form.cedula }}
-            </div>
-
-            <div>
-                <label for="id_correo">Correo:</label>
-                {{ form.correo }}
-            </div>
+            <script src="{% static 'js/navbar.js' %}"></script>
+        </div>
+    </section>
 
 
-            <div>
-                <label for="id_fecha_contratacion">Fecha de Contratación:</label>
-                {{ form.fecha_contratacion }}
-            </div>
-
-            <div>
-                <label for="id_depa">Departamento:</label>
-                {{ form.id_depa }}
-            </div>
-
-            <div>
-                <label for="id_pro">Profesión:</label>
-                {{ form.id_pro }}
-            </div>
-
-            <div>
-                <label for="id_trabajo">Labor:</label>
-                {{ form.id_trabajo }}
-            </div>
-
-            <div>
-                <label for="id_jornada">Tipo de Jornada:</label>
-                {{ form.id_jornada }}
-            </div>
-            <div class="espacio">
-                <button type="submit" class="guardar">Guardar</button>
-            </div>
-        </form>
-
-    </div>
-    <script src="{% static 'js/navbar.js' %}"></script>
 </body>
 
 </html>

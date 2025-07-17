@@ -1,0 +1,159 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado de Generación de Sueldos por Grupo</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <style>
+        .result-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-container h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .result-container h3 {
+            color: #555;
+            margin-top: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .result-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .result-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #f0f0f0;
+            color: #4CAF50;
+            /* Green for success */
+        }
+
+        .result-list li:last-child {
+            border-bottom: none;
+        }
+
+        .error-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .error-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #f0f0f0;
+            color: #f44336;
+            /* Red for errors */
+        }
+
+        .error-list li:last-child {
+            border-bottom: none;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+            border: 1px dashed #ccc;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .button-group-results {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .button-group-results .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-group-results .btn-back {
+            background-color: #6c757d;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .button-group-results .btn-back:hover {
+            background-color: #5a6268;
+        }
+
+        .button-group-results .btn-home {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .button-group-results .btn-home:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="layout">
+        <div class="header"> {% include 'includes/navbar.html' %}</div>
+        <div class="main-content">
+            <aside class="sidebar">
+            </aside>
+            <main class="content">
+                <div class="result-container">
+                    <h2>Resultado de Generación de Sueldos por Grupo</h2>
+
+                    {% if selected_labor %}
+                    <p><strong>Labor seleccionada:</strong> {{ selected_labor.nombre_trabajo }}</p>
+                    {% endif %}
+
+                    {% if sueldos_generados %}
+                    <h3>Sueldos Generados / Actualizados</h3>
+                    <ul class="result-list">
+                        {% for sueldo_msg in sueldos_generados %}
+                        <li>{{ sueldo_msg }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="no-results">
+                        <p>No se generaron ni actualizaron sueldos en esta ocasión.</p>
+                    </div>
+                    {% endif %}
+
+                    {% if errores_generacion %}
+                    <h3>Errores Encontrados</h3>
+                    <ul class="error-list">
+                        {% for error_msg in errores_generacion %}
+                        <li>{{ error_msg }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <div class="button-group-results">
+                        <a href="{% url 'generar_sueldo_grupal' %}" class="btn btn-back">Generar más Sueldos
+                            Grupales</a>
+                        <a href="{% url 'home' %}" class="btn btn-home">Ir al Inicio</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </section>
+</body>
+
+</html>

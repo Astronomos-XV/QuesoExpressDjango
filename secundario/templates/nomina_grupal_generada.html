@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nóminas Grupales Generadas</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <style>
+        body {
+            background-color: #f4f7f6;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="layout">
+        <div class="header"> {% include 'includes/navbar.html' %}</div>
+        <div class="main-content">
+            <aside class="sidebar">
+            </aside>
+            <main class="content">
+                <div class="result-container-nomina">
+                    <h2>Nóminas Grupales Generadas</h2>
+
+                    <h3>¡Nóminas Generadas Exitosamente!</h3>
+
+
+
+
+                    <div class="button-group-nomina">
+                        <a href="{% url 'generar_nomina_grupal' %}" class="btn btn-back">Generar Más Nóminas
+                            Grupales</a>
+                        <a href="{% url 'home' %}" class="btn btn-home">Volver al Inicio</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <div class="footer">3</div>
+    </section>
+</body>
+
+</html>

@@ -15,15 +15,44 @@
         <form method="post">
             {% csrf_token %}
 
+            {# Campos de username y email #}
             {% for field in form %}
-            {% if field.name != 'password' %}
+            {% if field.name != 'password' and field.name != 'superuser_code' and field.name != 'cedula' %}
             <div class="form-group">
                 {{ field.label_tag }}
                 {{ field }}
+                {% if field.errors %}
+                <div class="error">{{ field.errors }}</div>
+                {% endif %}
             </div>
             {% endif %}
             {% endfor %}
 
+            {# Campo de cédula #}
+            <div class="form-group">
+                {{ form.cedula.label_tag }}
+                {{ form.cedula }}
+                {% if form.cedula.errors %}
+                <div class="error">{{ form.cedula.errors }}</div>
+                {% endif %}
+                {% if form.cedula.help_text %}
+                <small class="form-text text-muted">{{ form.cedula.help_text }}</small>
+                {% endif %}
+            </div>
+
+            {# Campo de código de superusuario #}
+            <div class="form-group">
+                {{ form.superuser_code.label_tag }}
+                {{ form.superuser_code }}
+                {% if form.superuser_code.errors %}
+                <div class="error">{{ form.superuser_code.errors }}</div>
+                {% endif %}
+                {% if form.superuser_code.help_text %}
+                <small class="form-text text-muted">{{ form.superuser_code.help_text }}</small>
+                {% endif %}
+            </div>
+
+            {# Campo de contraseña #}
             <div class="form-group">
                 {{ form.password.label_tag }}
                 <div style="display: flex; align-items: last baseline;">
@@ -32,6 +61,9 @@
                         Mostrar
                     </button>
                 </div>
+                {% if form.password.errors %}
+                <div class="error">{{ form.password.errors }}</div>
+                {% endif %}
             </div>
 
             <button type="submit">Crear Usuario</button>
@@ -39,8 +71,6 @@
         </form>
         <a class="btn" href="{% url 'login' %}">Volver a Login</a>
     </div>
-
-
 </body>
 
 </html>
