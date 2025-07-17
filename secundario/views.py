@@ -2,17 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
-<<<<<<< HEAD
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Empleado,  Tasa, Nomina, Sueldo, TipoDeJornada, Departamento, Profesion, Labor, TipoDeJornada, Asistencia, Asistenciaconfirmada, Usuarios, PrestacionSocialAcumulada
 from .forms import EmpleadoForm, SueldoForm, SuperuserForm, DepartamentoForm, ProfesionForm, LaborForm, TipoDeJornadaForm, NominaForm, BuscarNominaForm, AsistenciaForm, NominaGrupalForm, SueldoGrupalForm
 from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-=======
-from .models import Empleado,  Tasa, Nomina, Sueldo, TipoDeJornada, Departamento, Profesion, Labor, TipoDeJornada
-from .forms import EmpleadoForm, SueldoForm, SuperuserForm, DepartamentoForm, ProfesionForm, LaborForm, TipoDeJornadaForm, NominaForm, BuscarNominaForm
->>>>>>> ecf8ee0496af38079cf08b3ba6d2402d0e30181d
 from django.contrib import messages
 from datetime import datetime, timedelta
 from django.views.generic import ListView
@@ -931,8 +926,6 @@ def eliminar_nomina(request, id_nomina):
         nomina.delete()
         return render(request, 'home.html')
     return render(request, 'eliminar_nomina.html', {'nomina': nomina})
-<<<<<<< HEAD
-=======
 
 
 def buscar_nomina(request):
@@ -953,4 +946,4 @@ def buscar_nomina(request):
         'nominas': nominas,
         'cedula_buscada': cedula
     })
->>>>>>> ecf8ee0496af38079cf08b3ba6d2402d0e30181d
+
