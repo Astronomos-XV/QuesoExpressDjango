@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Recibo de Nómina</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #007c91;
+            background-color: #f4f4f4;
+            font-size: 11pt;
+        }
+
+        h1 {
+            color: #007c91;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            background-color: #e0e0e0;
+            border-bottom: 2px solid #007c91;
+            font-size: 20pt;
+        }
+
+        h2 {
+            font-size: 14pt; 
+            color: #007c91;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .nomina-container p {
+            margin: 3px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            page-break-inside: auto; 
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px; 
+            text-align: left;
+            font-size: 10.5pt;
+        }
+
+        th {
+            background-color: #007c91;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tbody tr:last-child strong {
+            color: #007c91;
+        }
+        
+        .total {
+            font-weight: bold;
+            font-size: 14pt; 
+            text-align: right;
+            margin-top: 30px;
+            padding: 10px 0;
+            border-top: 3px double #007c91; 
+            color: #007c91;
+        }
+
+        .signature {
+            margin-top: 70px; 
+            border-top: 1px solid #007c91;
+            width: 250px;
+            text-align: center;
+            padding-top: 10px;
+            font-style: italic;
+            color: #555;
+            font-size: 10pt;
+        }
+
+        .recibo-individual {
+            page-break-after: always; 
+        }
+        .recibo-individual:last-child {
+            page-break-after: avoid;
+        }
+    </style>
+</head>
+
+<body>
+    {% for concepto in conceptos_nomina %}
+    
+    <div class="recibo-individual">
+        <div class="header">
+            <h1>Recibo de Nómina (N° {{ nomina.id_nomina }})</h1>
+            <p style="text-align: center; color: #555;">Queso Express C.A.</p>
+        </div>
+        
+        <div class="container">
+            <div class="nomina-container">
+                <p><strong>Empleado:</strong> {{ nomina.id_empleado.nombre }} {{ nomina.id_empleado.apellido }}</p>
+                <p><strong>Cédula:</strong> {{ nomina.id_empleado.cedula }}</p>
+                <p><strong>Período:</strong> {{ nomina.periodo_inicio|date:"d/m/Y" }} - {{ nomina.periodo_fin|date:"d/m/Y" }}</p>
+                <p><strong>Fecha de emisión:</strong> {{ fecha_generacion|date:"d/m/Y" }}</p>
+            </div>
+        </div>
+
+        <h2>Asignaciones</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Concepto</th>
+                    <th>Monto (Bs)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Sueldo base</td>
+                    <td>{{ concepto.sueldo_bs_base|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>Cestaticket</td>
+                    <td>{{ concepto.cestaticket_bs|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>Pago Horas extras</td>
+                    <td>{{ concepto.pago_horas_extras_bs|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>Pago Horas festivas</td>
+                    <td>{{ concepto.pago_horas_festivas_bs|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>Bono extraordinario</td>
+                    <td>{{ concepto.pago_bonos_bs|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total asignaciones</strong></td>
+                    <td><strong>{{ concepto.total_asignaciones_bs|floatformat:2 }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Deducciones</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Concepto</th>
+                    <th>Monto (Bs)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IVSS (Deducción)</td>
+                    <td>{{ concepto.ivss_bs|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>RPE (Deducción)</td>
+                    <td>{{ concepto.rpe_bs|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>FAOV (Deducción)</td>
+                    <td>{{ concepto.faov_bs|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>Deducción Inasistencias</td>
+                    <td>{{ concepto.pago_inasistencias_bs|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>Deducción Préstamo</td>
+                    <td>{{ concepto.pago_prestamo_bs|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total deducciones</strong></td>
+                    <td><strong>{{ concepto.total_deducciones_bs|floatformat:2 }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="total">
+            <p>Sueldo neto a pagar: **{{ nomina.sueldo_neto_bs|floatformat:2 }} Bs**</p>
+        </div>
+
+        <div class="signature">
+            <p>Firma del empleado</p>
+        </div>
+        
+    </div> {% endfor %} 
+    </body>
+
+</html>

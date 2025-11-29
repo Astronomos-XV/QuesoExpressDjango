@@ -1,0 +1,37 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+    <title>Document</title>
+</head>
+
+<body>
+    {% block content %}
+    <div class="header"> {% include 'includes/navbar.html' %}</div>
+    <div class="container mt-4">
+        <h2>{{ titulo }}</h2>
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">¡Advertencia! Acción Irreversible</h4>
+            <p>Estás a punto de eliminar TODOS los préstamos registrados en el sistema Esta acción no se puede deshacer.
+            </p>
+            <p>Por favor, confirma si realmente deseas proceder.</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger mt-3">Sí, Eliminar TODOS los Préstamos</button>
+            <a href="{% url 'listar_prestamos' %}" class="btn btn-secondary mt-3">Cancelar</a>
+        </form>
+    </div>
+    {% endblock %}
+</body>
+
+</html>

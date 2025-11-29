@@ -1,0 +1,20 @@
+{% extends 'home.html' %}
+{% block content %}
+
+<div class="table-container">
+    <h2>¿Seguro que deseas eliminar este sueldo?</h2>
+    <p class="bold">Empleado: {{ sueldo.id_empleado.nombre }} {{ sueldo.id_empleado.apellido }}</p>
+    <p class="bold">Sueldo: {{ sueldo.sueldo_bs }} Bs</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="button-group">
+            <div>
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+            </div>
+            <a href="{% url 'sueldo_lista' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

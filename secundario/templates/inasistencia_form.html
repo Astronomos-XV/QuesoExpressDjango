@@ -1,0 +1,30 @@
+{% extends 'home.html' %} {% block content %}
+
+
+
+<div class="container ">
+
+    <div class="card mt-3">
+        <div class="card-header">
+            <div class="">{{ action }} Inasistencia</div>
+        </div>
+        <div class="card-body">
+            <form method="post" class="clean-form">
+                {% csrf_token %} {{ form.as_p }}
+                <div class="button-group">
+                    <div>
+                        <button type="submit" class="btn btn-success">{{ action }}</button>
+                    </div>
+                    <a href="{% url 'inasistencia_list' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock %}

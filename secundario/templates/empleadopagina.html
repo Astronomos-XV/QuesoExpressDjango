@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Título por Defecto{% endblock %}</title>
+    {# Tus enlaces a CSS generales #}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/busquedad.css' %}">
+    {# Si usas Font Awesome para iconos (ej. fas fa-plus), asegúrate de tenerlo aquí #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    {% block extra_head %}{% endblock %} {# Para estilos o scripts específicos de la página #}
+</head>
+
+<body>
+    <div class="main-layout-container">
+        {% block main_nav %}
+        {% endblock %}
+
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+
+    </div>
+    {% block extra_js %}{% endblock %} {# Para scripts JS específicos de la página #}
+</body>
+
+</html>

@@ -1,0 +1,130 @@
+body {
+
+    background-color: #f5f7fa;
+    margin: 0;
+
+}
+
+
+
+.container {
+    margin-top: 10px;
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.form-section {
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: #dfeef0;
+    border-radius: 8px;
+}
+
+.form-section h2 {
+    color: #007c91;
+    margin-top: 0;
+    font-size: 1.2em;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+label {
+    width: 250px;
+    font-weight: 600;
+    color: #34495e;
+}
+
+input,
+select {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    max-width: 300px;
+    font-size: 14px;
+}
+
+.readonly-field {
+    background-color: #f0f3f7;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.form-actions {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.btn {
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0 10px;
+    transition: all 0.3s;
+    border: none;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #c0392b;
+}
+
+.calculation-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #dfeef0;
+    border-radius: 8px;
+    border-left: 5px solid #007c91;
+}
+
+.calculation-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 8px 0;
+    border-bottom: 1px dashed #007c91;
+}
+
+.calculation-row.total {
+    font-weight: bold;
+    font-size: 1.1em;
+    border-bottom: 2px solid #007c91;
+    padding-top: 12px;
+}
+
+.info-text {
+    font-size: 0.85em;
+    color: #7f8c8d;
+    margin-top: 5px;
+    font-style: italic;
+}

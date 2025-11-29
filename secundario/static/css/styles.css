@@ -1,0 +1,297 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #e0f2f7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+    flex-grow: 1;
+}
+
+.layout .main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 10px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+}
+
+main {
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+}
+
+h1,
+.table-title,
+p.bold {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 15px;
+    color: #007c91;
+}
+
+p.bold {
+    font-weight: bold;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007c91;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 5px;
+    transition: background-color 0.3s, transform 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0092ac;
+    transform: translateY(-2px);
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.btn-info {
+    background-color: #797d7e;
+    color: white;
+    cursor: default;
+    opacity: 0.9;
+}
+
+.btn-info:hover {
+    background-color: #797d7e;
+    color: white;
+    cursor: default;
+    opacity: 0.9;
+}
+
+.table-container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.nomina-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+    table-layout: auto;
+    white-space: normal;
+}
+
+.nomina-table th,
+.nomina-table td {
+    padding: 6px 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    box-sizing: border-box;
+    vertical-align: middle;
+    font-size: 0.8em;
+}
+
+.nomina-table th {
+    background-color: #007c91;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.75em;
+}
+
+.nomina-table td {
+    background-color: #f8f8f8;
+    font-size: 0.875em;
+}
+
+.nomina-table tr:nth-child(even) td {
+    background-color: #eaf5f8;
+}
+
+.nomina-table .action-buttons {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    padding: 0;
+}
+
+.nomina-table .action-buttons .btn {
+    padding: 6px 10px;
+    font-size: 0.8em;
+    margin: 0;
+}
+
+
+.table-listing-container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1200px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+
+}
+
+@media (max-width: 992px) {
+
+    .nomina-table th,
+    .nomina-table td {
+        padding: 6px 8px;
+    }
+}
+
+@media (max-width: 768px) {
+    .table-container {
+        padding: 5px;
+    }
+
+    .nomina-table {
+        display: block;
+        width: 100%;
+        border: none;
+        white-space: normal;
+    }
+
+    .nomina-table thead,
+    .nomina-table tbody,
+    .nomina-table th,
+    .nomina-table td,
+    .nomina-table tr {
+        display: block;
+    }
+
+    .nomina-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .nomina-table tr {
+        border: 1px solid #b0bec5;
+        margin-bottom: 15px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .nomina-table td {
+        border: none;
+        position: relative;
+        padding-left: 45%;
+        text-align: right;
+        white-space: normal;
+        font-size: 0.9em;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    .nomina-table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 6px;
+        width: 40%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: #007c91;
+        font-size: 0.95em;
+    }
+
+    .nomina-table .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .nomina-table .action-buttons .btn {
+        flex-grow: 1;
+        max-width: 100%;
+        padding: 8px;
+        font-size: 0.85em;
+    }
+}
+
+.card-body div {
+    margin-bottom: 10px;
+}
+
+.card-body div.fieldWrapper {
+    padding: 0;
+}

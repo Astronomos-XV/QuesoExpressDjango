@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Empleado - Búsqueda de Nóminas</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/busquedad.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .main-container {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .description-text {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .button-group-top {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .search-section {
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            margin-bottom: 30px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .search-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .search-button:hover {
+            background-color: #218838;
+        }
+
+        .results-section {
+            margin-top: 20px;
+        }
+
+        .results-section h2 {
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+        }
+
+        .search-query-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .nomina-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .nomina-table th,
+        .nomina-table td {
+            border: 1px solid #b0bec5;
+            ;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .nomina-table th {
+            background-color: #4fa7ad;
+            font-weight: bold;
+        }
+
+        .nomina-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .nomina-table tbody tr:hover {
+            background-color: #e9e9e9;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <h1>Bienvenido Empleado</h1>
+        <p class="description-text">Para ver tus nominas y colocar tu asistencia dale click a continuar</p>
+
+        <div class="button-group-top">
+            <a class="btn btn-primary" href="{% url 'registrar_asistencia_diaria' %}">Continuar</a>
+        </div>
+
+</body>

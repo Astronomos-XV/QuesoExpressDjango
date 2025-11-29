@@ -1,0 +1,22 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Editar Nómina {{ nomina.id_nomina }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <div class="button-group">
+            <div>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+            <a href="{% url 'home' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+
+<a class="cerrar_sesion" href="{% url 'cerrar_sesion' %}">Cerrar Sesión</a>

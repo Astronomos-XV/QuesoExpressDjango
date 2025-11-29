@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+    <style>
+        .nomina-header, .resumen-nomina {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .resumen-nomina h3 {
+            color: #2c3e50;
+        }
+        /* Mantenemos el grid original */
+        .conceptos-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .asignaciones, .deducciones {
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .asignaciones {
+            background-color: #e9f7ef; 
+        }
+        .deducciones {
+            background-color: #fcece9; 
+        }
+        .concepto-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+        .concepto-item:last-child {
+            border-bottom: none;
+        }
+        .total-item {
+            font-weight: bold;
+            font-size: 1.1em;
+            padding-top: 10px;
+            border-top: 2px solid #2c3e50;
+            margin-top: 10px; /* Separación de la línea de conceptos */
+        }
+        .neto-final {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+        .subtitulo-dinamico {
+            font-weight: bold;
+            color: #34495e;
+            margin: 15px 0 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header"> {% include 'includes/navbar.html' %}</div>
+    <div class="container">
+
+        <h2>{{ titulo }}</h2>
+        
+        <div class="nomina-header">
+            <p><strong>Empleado:</strong> {{ nomina.id_empleado.nombre }} {{ nomina.id_empleado.apellido }}</p>
+            <p><strong>Labor:</strong> {{ nomina.id_trabajo.nombre_trabajo }}</p>
+            <p><strong>Período:</strong> {{ nomina.periodo_inicio|date:"d/m/Y" }} - {{ nomina.periodo_fin|date:"d/m/Y" }}</p>
+        </div>
+
+        <div >
+            
+            <div class="asignaciones">
+                <h3>💰 Asignaciones (Ingresos)</h3>
+                
+                <div class="subtitulo-dinamico">Conceptos Base</div>
+                
+                <div class="concepto-item">
+                    <span>Sueldo Base (Bs)</span>
+                    <span>Bs. {{ concepto.sueldo_bs_base|floatformat:2 }}</span>
+                </div>
+                <div class="concepto-item">
+                    <span>Cestaticket</span>
+                    <span>Bs. {{ concepto.cestaticket_bs|floatformat:2 }}</span>
+                </div>
+                <div class="concepto-item">
+                    <span>Horas Ordinarias Trabajadas ({{ concepto.horas_ordinarias|floatformat:2 }} hrs)</span>
+                    <span>(Incluido en Base)</span>
+                </div>
+                <div class="concepto-item">
+                    <span>Pago Horas Extras ({{ concepto.horas_extras|floatformat:2 }} hrs)</span>
+                    <span>Bs. {{ concepto.pago_horas_extras_bs|floatformat:2 }}</span>
+                </div>
+                <div class="concepto-item">
+                    <span>Pago Días Feriados/Fin ({{ concepto.horas_festivas|floatformat:2 }} hrs)</span>
+                    <span>Bs. {{ concepto.pago_horas_festivas_bs|floatformat:2 }}</span>
+                </div>
+                <div class="concepto-item">
+                    <span>Pago Bonos Extraordinarios</span>
+                    <span>Bs. {{ concepto.pago_bonos_bs|floatformat:2 }}</span>
+                </div> <!----> 
+                
+                <div class="subtitulo-dinamico">Asignaciones Adicionales (Reglas)</div>
+                {% for detalle in detalles_personalizados %}
+                    {% if detalle.tipo_concepto == 'ASIGNACION' %}
+                        <div class="concepto-item">
+                            <span>{{ detalle.nombre_concepto }}</span>
+                            <span>Bs. {{ detalle.monto_calculado_bs|floatformat:2 }}</span>
+                        </div>
+                    {% endif %}
+                {% empty %}
+                    <p class="concepto-item"><span>(No hay asignaciones adicionales)</span></p>
+                {% endfor %}
+
+                <div class="concepto-item total-item">
+                    <span>TOTAL ASIGNACIONES</span>
+                    <span>Bs. {{ nomina.total_asignaciones_bs|floatformat:2 }}</span>
+                </div>
+            </div>
+
+            <div class="deducciones">
+                <h3>➖ Deducciones (Descuentos)</h3>
+
+                <div class="subtitulo-dinamico">Deducciones Legales y de Préstamo</div>
+                
+                <div class="concepto-item">
+                    <span>IVSS</span>
+                    <span>Bs. -{{ concepto.ivss_bs|floatformat:2 }}</span>
+                </div>
+                <div class="concepto-item">
+                    <span>INCES </span>
+                    <span>Bs. -{{ concepto.inces_bs|floatformat:2 }}</span>
+                </div>
+                <div class="concepto-item">
+                    <span>REOP</span>
+                    <span>Bs. -{{ concepto.rpe_bs|floatformat:2 }}</span>
+                </div>
+                <div class="concepto-item">
+                    <span>FAOV</span>
+                    <span>Bs. -{{ concepto.faov_bs|floatformat:2 }}</span>
+                </div>
+                <div class="concepto-item">
+                    <span>Deducción por Inasistencias ({{ concepto.dias_enfermedad|floatformat:0 }} día(s))</span>
+                    <span>Bs. -{{ concepto.pago_inasistencias_bs|floatformat:2 }}</span>
+                </div>
+                <div class="concepto-item">
+                    <span>Pago de Préstamo / Adelanto</span>
+                    <span>Bs. -{{ concepto.pago_prestamo_bs|floatformat:2 }}</span>
+                </div>
+                
+                <div class="subtitulo-dinamico">Deducciones Adicionales (Reglas)</div>
+                {% for detalle in detalles_personalizados %}
+                    {% if detalle.tipo_concepto == 'DEDUCCION' %}
+                        <div class="concepto-item">
+                            <span>{{ detalle.nombre_concepto }}</span>
+                            <span>Bs. -{{ detalle.monto_calculado_bs|floatformat:2 }}</span>
+                        </div>
+                    {% endif %}
+                {% empty %}
+                    <p class="concepto-item"><span>(No hay deducciones adicionales)</span></p>
+                {% endfor %}
+                
+                <div class="concepto-item total-item">
+                    <span>TOTAL DEDUCCIONES</span>
+                    <span>Bs. -{{ nomina.total_deducciones_bs|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="neto-final">
+            NETO A PAGAR: **Bs. {{ nomina.sueldo_neto_bs|floatformat:2 }}**
+        </div>
+        
+        <div class="button-group" style="margin-top: 30px;">
+            <a href="{% url 'home' %}" class="btn cancelar">Volver al Inicio</a>
+        </div>
+
+    </div>
+</body>
+
+</html>

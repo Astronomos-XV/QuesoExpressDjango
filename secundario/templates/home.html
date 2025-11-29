@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Inicio</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+
+    <script src="{% static 'js/home.js' %}" defer></script>
+</head>
+
+<body>
+    <section class="layout">
+        <div class="header"> {% include 'includes/navbar.html' %}</div>
+        <div class="main">
+            <main>
+                {% block content %}
+                <h1>Bienvenido a Queso Express</h1>
+                <p class="bold">Aquí puede encontrar los empleados de la empresa</p>
+                <div class="button-group">
+                    <a class="btn" href="{% url 'crear_empleado' %}">Registrar Empleados</a>
+                    <a class="btn" href="{% url 'listar_empleados' %}">Mostrar Listado de Empleados</a>
+                    <a class="btn" href="{% url 'generar_nomina_grupal' %}">Generar Nominas</a>
+                    
+                    <a class="btn" href="{% url 'tasa' %}">Ver Tasas</a>
+                    <a class="btn" href="{% url 'crear_concepto_nomina' %}">Parametros</a>
+                    <a class="btn" href="{% url 'gestionar_conceptos_nomina' %}">Listado de Parametros</a>
+                    
+
+                    <a href="{% url 'lista_liquidaciones' %}" class="btn ">
+                        Liquidaciones</a>
+                <a href="{% url 'eliminar_todas_nominas' %}" class="btn btn-danger"
+                        onclick="return confirm('¿Está seguro de eliminar TODAS las nóminas? Esta acción es irreversible.');">
+                        Eliminar Todas las Nóminas
+                    </a>   <!-- -->
+                    <a href="{% url 'sueldo_labor_list_create' %} " class="btn">Labores Por Sueldo</a>
+                    
+                    <a href="{% url 'listar_prestamos' %} " class="btn">Prestamos</a>
+
+                </div>
+                <div class="table-listing-container">
+                    <h2 class="table-title">Lista de Nominas</h2>
+                    <table class="table-responsive nomina-table">
+
+                        <thead>
+                            <tr>
+                            <!-- <th>ID Nómina</th>-->
+                                <th>Empleado</th>
+                                <th>Labor</th>
+                                <th>Periodo</th>
+                                <th>Fecha de Inicio</th>
+                                <th>Fecha  Final</th>
+                                <!-- <th>Cestaticket (Bs)</th>
+                                <th>Prestaciones (Bs)</th>
+                                <th>Horas Extras</th>
+                                <th>Pago Extras (Bs)</th>
+                                <th>Horas Festivas</th>
+                                <th>Pago Festivas (Bs)</th>-->
+                                <th>Total Asignaciones (Bs)</th>
+                                <th>Total Deducciones (Bs)</th>
+                                <th>Sueldo Neto (Bs)</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for nomina in nominas %}
+                            <tr>
+                                <!--<td data-label="ID Nómina">{{ nomina.id_nomina }}</td>-->
+                                <td data-label="Empleado">{{ nomina.id_empleado.nombre }}
+                                    {{ nomina.id_empleado.apellido}}</td>
+                                <td data-label="Labor">{{ nomina.id_trabajo.nombre_trabajo }}</td>
+                                <td data-label="Período">{{ nomina.tipo_periodo }}</td>
+                                <td data-label="Sueldo Base (Bs)">{{ nomina.periodo_inicio }}</td>
+                                <td data-label="Sueldo Base (Bs)">{{ nomina.periodo_fin }}</td>
+                                <!-- <td data-label="Cestaticket (Bs)">{{ nomina.cestaticket_bs }}</td>
+                                <td data-label="Prestaciones (Bs)">{{ nomina.pago_prestaciones_bs }}</td>
+                                <td data-label="Horas Extras">{{ nomina.horas_extras }}</td>
+                                <td data-label="Pago Extras (Bs)">{{ nomina.pago_horas_extras_bs }}</td>
+                                <td data-label="Horas Festivas">{{ nomina.horas_festivas }}</td>
+                                <td data-label="Pago Festivas (Bs)">{{ nomina.pago_horas_festivas_bs }}</td>-->
+                                <td data-label="Total Asignaciones (Bs)">{{ nomina.total_asignaciones_bs }}</td>
+                                <td data-label="Total Deducciones (Bs)">{{ nomina.total_deducciones_bs }}</td>
+                                <td data-label="Sueldo Neto (Bs)">{{ nomina.sueldo_neto_bs }}</td>
+                                
+                                <td data-label="Acciones" class="action-buttons">
+                                    <div>
+                                       <!--   <a href="{% url 'editar_nomina' nomina.id_nomina %}" class="btn btn-warning">
+                                            Editar
+                                        </a>
+                                      <a href="{% url 'eliminar_nomina' nomina.id_nomina %}" class="btn btn-danger"
+                                            onclick="return confirm('¿Está seguro de eliminar esta nómina?');">
+                                            Eliminar
+                                        </a>-->
+                                        <a href="{% url 'exportar_nomina_pdf' nomina.id_nomina %}"
+                                            class="btn btn-primary">Exportar a PDF</a>
+                                        
+                                            <a href="{% url 'ver_concepto_nomina' pk=nomina.pk %}" class="btn btn-primary" style="margin-left: 15px;">
+                                            Ver Conceptos
+                                            </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="16">No hay nóminas registradas.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    {% if nominas.has_other_pages %}
+                    <div class="button-group">
+                        {% if nominas.has_previous %}
+                        <a class="btn" href="?page=1">&laquo; Primera</a>
+                        {% endif %}
+
+                        {% if nominas.has_previous %}
+                        <a class="btn" href="?page={{ nominas.previous_page_number }}">Anterior</a>
+                        {% endif %}
+
+                        <div class="btn btn-info">
+                            <strong>Página {{ nominas.number }} de {{ nominas.paginator.num_pages }}.</strong>
+                        </div>
+                        {% if nominas.has_next %}
+                        <a class="btn" href="?page={{ nominas.next_page_number }}">Siguiente</a>
+                        {% endif %}
+
+                        {% if nominas.has_next %}
+                        <a class="btn" href="?page={{ nominas.paginator.num_pages }}">Última &raquo;</a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endblock %}
+            </main>
+        </div>
+        <div class="footer"></div>
+    </section>
+    <div>
+        <script src="{% static 'js/navbar.js' %}"></script>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+</head>
+<style>
+            th {
+            border: 1px solid #ddd;
+            background-color: #007c91;
+            color: white;
+            padding: 4px; 
+            text-align: left;
+            font-size: 10.5pt;
+            }
+            td {
+            border: 1px solid #ddd;
+            background-color: white;
+            padding: 4px; 
+            text-align: left;
+            font-size: 10.5pt;
+        }
+</style>
+<body>
+    <section class="layout">
+        <div class="header"> {% include 'includes/navbar.html' %}</div>
+        <div class="main-content">
+            <div class="container">
+            <header>
+                <h1>{{ titulo }}</h1>
+                <div class="button-group">
+                <a href="{% url 'crear_concepto_nomina' %}" class="btn anadir" style="margin-bottom: 20px;">
+                     Añadir Nuevo Concepto
+                </a>
+                </div>
+            </header>
+            </div>
+            <main>
+        
+
+                {% if conceptos %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Tipo</th>
+                            <th>Periodicidad</th>
+                            <th>Monto Fijo (Bs)</th>
+                            <th>Porcentaje</th>
+                            <th>Fijo Global</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for concepto in conceptos %}
+                        <tr>
+                            <td>{{ concepto.nombre }}</td>
+                            <td>{{ concepto.tipo }}</td>
+                            <td>{{ concepto.periodicidad }}</td>
+                            <td>{{ concepto.monto_fijo|default:"0,00" }}</td>
+                            <td>{{ concepto.porcentaje|default:"0,0000" }}</td>
+                            <td>{{ concepto.es_concepto_fijo|yesno:"Sí,No" }}</td>
+                            <td class="action-buttons">
+                                <a href="{% url 'editar_concepto_nomina' pk=concepto.pk %}" class="btn btn-warning">Editar</a>
+                                {% if not concepto.es_concepto_fijo %}
+                                    <a href="{% url 'eliminar_concepto_nomina' pk=concepto.pk %}" class="btn btn-danger">Eliminar</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                    <p>No se han definido conceptos de nómina todavía. <a href="{% url 'crear_concepto_nomina' %}">Cree el primero aquí.</a></p>
+                {% endif %}
+            </main>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{% extends 'basamento.html' %}
+{% block title %}Calcular Prestaciones Grupales{% endblock %}
+
+{% block content %}
+{% include 'includes/navbar.html' %}
+
+<div class="card-container">
+    <div class="card">
+        <h2>Calcular Prestaciones Sociales Grupales</h2>
+        <p>Haga clic en el botón para iniciar el cálculo y registro de prestaciones sociales para todos los empleados.
+            Esto incluye el depósito trimestral de antigüedad y la capitalización de intereses si aplica.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Iniciar Cálculo de Prestaciones</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

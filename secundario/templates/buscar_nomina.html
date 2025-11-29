@@ -1,0 +1,126 @@
+{% extends 'empleadopagina.html' %} {# Asegúrate de que 'empleadopagina.html' sea tu base template #}
+
+{% block content %}
+<section class="layout">
+    <div class="header"></div>
+    <div class="main">
+
+
+
+        {% if not request.user.usuarios.empleado %}
+        <section class="search-section">
+
+            <h3>Buscar Nóminas por Cédula</h3>
+            <form method="post" action="{% url 'buscar_nomina' %}" class="search-form">
+                {% csrf_token %}
+                {# Renderiza el campo 'cedula' del formulario #}
+                {% if form %}
+                {{ form.cedula }}
+                {% else %}
+
+                <input type="text" name="cedula" class="search-input" placeholder="Buscar nómina por cédula"
+                    aria-label="Cédula del empleado" value="{{ cedula_buscada|default:'' }}">
+                {% endif %}
+                <button class="search-button" type="submit">
+                    Buscar
+                </button>
+            </form>
+            {% if form and form.errors %}
+            <div>
+                {% for field in form %}
+                {% for error in field.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </section>
+        {% endif %}
+
+        <section class="card">
+            <h2 style="text-align: center;">Buscador de Nóminas</h2>
+
+            <div class="button-group">
+                <a class="btn btn-primary" href="{% url 'login' %}">Volver al inicio de sesión</a>
+                <a class="btn btn-primary" href="{% url 'registrar_asistencia_diaria' %}">Anotar Asistencia</a>
+            </div>
+
+            <div class="card-body">
+                <h2>Resultados de Nóminas</h2>
+                {% if cedula_buscada %}
+                <p class="search-query-info">Mostrando nóminas para cédula: <strong>{{ cedula_buscada }}</strong></p>
+                {% endif %}
+
+                {% if nominas %}
+                <div class="table-responsive">
+                    <table class="nomina-table">
+                        <thead>
+                            <tr>
+                                <th>ID Nómina</th>
+                                <th>Empleado</th>
+                                <th>Período</th>
+                                <th>Sueldo Neto</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for nomina in nominas %}
+                            <tr>
+                                <td>{{ nomina.id_nomina }}</td>
+                                <td>{{ nomina.id_empleado.nombre }} {{ nomina.id_empleado.apellido }}</td>
+                                <td>{{ nomina.periodo_inicio|date:"d/m/Y" }} - {{ nomina.periodo_fin|date:"d/m/Y" }}
+                                </td>
+                                <td>{{ nomina.sueldo_neto_bs|floatformat:2 }} Bs</td>
+                                <td>
+
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {# Controles de Paginación #}
+                <div class="button-group">
+                    <ul class="pagination justify-content-center">
+                        {% if nominas.has_previous %}
+
+                        <a class="btn" href="?page=1&cedula={{ cedula_buscada }}">&laquo; Primera</a>
+
+                        <a class="btn"
+                            href="?page={{ nominas.previous_page_number }}&cedula={{ cedula_buscada }}">Anterior</a>
+
+                        {% else %}
+
+                        {% endif %}
+
+
+                        <a class="btn btn-info">
+                            Página {{ nominas.number }} de {{ nominas.paginator.num_pages }}
+                        </a>
+
+
+                        {% if nominas.has_next %}
+                        <a class="btn"
+                            href="?page={{ nominas.next_page_number }}&cedula={{ cedula_buscada }}">Siguiente</a>
+                        <a class="btn" href="?page={{ nominas.paginator.num_pages }}&cedula={{ cedula_buscada }}">Última
+                            &raquo;</a>
+                        {% else %}
+
+                        {% endif %}
+                    </ul>
+                </div>
+
+                {% else %}
+                <div class="alert alert-info">
+                    No se encontraron nóminas para la cédula proporcionada.
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}

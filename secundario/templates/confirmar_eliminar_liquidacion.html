@@ -1,0 +1,29 @@
+{% extends 'home.html' %}
+{% block title %}Confirmar Eliminación{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Confirmar Eliminación de Liquidación</h4>
+                </div>
+                <div class="card-body">
+                    <p>¿Estás seguro que deseas eliminar la liquidación para <strong>{{ liquidacion.id_empleado.nombre
+                            }} {{ liquidacion.id_empleado.apellido }}</strong>, del tipo <strong>{{
+                            liquidacion.get_tipo_liquidacion_display }}</strong>, con fecha <strong>{{
+                            liquidacion.fecha_liquidacion|date:"d/m/Y" }}</strong> y un total de <strong>{{
+                            liquidacion.total_liquidacion_bs|floatformat:2 }} BS</strong>?</p>
+                    <p class="text-danger">Esta acción no se puede deshacer.</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger me-2">Sí, Eliminar</button>
+                        <a href="{% url 'detalle_liquidacion' liquidacion.pk %}" class="btn btn-secondary">Cancelar</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

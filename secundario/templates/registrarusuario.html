@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+
+
+
+
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>Añadir Usuario</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <script src="{% static 'js/password.js' %}" defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Añadir Usuario</h2>
+        <form method="post">
+            {% csrf_token %}
+
+            {# Campos de username y email #}
+            {% for field in form %}
+            {% if field.name != 'password' and field.name != 'superuser_code' and field.name != 'cedula' %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                <div class="error">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+
+            {# Campo de cédula #}
+            <div class="form-group">
+                {{ form.cedula.label_tag }}
+                {{ form.cedula }}
+                {% if form.cedula.errors %}
+                <div class="error">{{ form.cedula.errors }}</div>
+                {% endif %}
+                {% if form.cedula.help_text %}
+                <small class="form-text text-muted">{{ form.cedula.help_text }}</small>
+                {% endif %}
+            </div>
+
+            {# Campo de código de superusuario #}
+            <div class="form-group">
+                {{ form.superuser_code.label_tag }}
+                {{ form.superuser_code }}
+                {% if form.superuser_code.errors %}
+                <div class="error">{{ form.superuser_code.errors }}</div>
+                {% endif %}
+                {% if form.superuser_code.help_text %}
+                <small class="form-text text-muted">{{ form.superuser_code.help_text }}</small>
+                {% endif %}
+            </div>
+
+            {# Campo de contraseña #}
+            <div class="form-group">
+                {{ form.password.label_tag }}
+                <div style="display: flex; align-items: last baseline;">
+                    {{ form.password }}
+                    <button type="button" onclick="togglePasswordVisibility('{{ form.password.auto_id }}')">
+                        Mostrar
+                    </button>
+                </div>
+                {% if form.password.errors %}
+                <div class="error">{{ form.password.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit">Crear Usuario</button>
+
+        </form>
+        <a class="btn" href="{% url 'home' %}">Volver a Inicio</a>
+    </div>
+</body>
+
+</html>

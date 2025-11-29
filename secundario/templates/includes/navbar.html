@@ -1,0 +1,72 @@
+{% load static %}
+
+<nav class="navbar">
+    <div class="navbar-brand">
+        <a href="{% url 'home' %}">Queso Express</a>
+    </div>
+
+    <button class="navbar-toggler" id="navbarToggler">
+        <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="navbar-links" id="navbarLinks">
+        <ul>
+            <li>
+                <a class="linked" href="{% url 'gestion_datos' %}" class="nav-link">Tablas</a>
+            </li>
+            <li>
+
+                <a class="linked" href="{% url 'gestion_datos' %}?form=departamento" class="nav-link">Departamento</a>
+
+            </li>
+            <li>
+                <a class="linked" href="{% url 'gestion_datos' %}?form=profesion" class="nav-link">Profesión</a>
+            </li>
+            <li>
+                <a class="linked" href="{% url 'gestion_datos' %}?form=labor" class="nav-link">Labor</a>
+            </li>
+            <li>
+                <a class="linked" href="{% url 'gestion_datos' %}?form=jornada" class="nav-link"> Jornada</a>
+            </li>
+            <li>
+                <a class="linked" href="{% url 'sueldo_lista' %}" class="nav-link">Sueldo</a>
+            </li>
+            <li>
+                <a class="linked" href="{% url 'inasistencia_list' %}" class="nav-link">Asistencias</a>
+            </li>
+
+            <li>
+                <a class="linked" href="{% url 'crear_superuser' %}">Usuario</a>
+            </li>
+
+
+
+            <li>
+                <a class="btn btn-danger" href="{% url 'cerrar_sesion' %}"><strong>Salir</strong></a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navbarToggler = document.getElementById('navbarToggler');
+        const navbarLinks = document.getElementById('navbarLinks');
+
+        if (navbarToggler && navbarLinks) {
+            navbarToggler.addEventListener('click', function () {
+                navbarLinks.classList.toggle('active');
+                navbarToggler.classList.toggle('active');
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!navbarLinks.contains(event.target) && !navbarToggler.contains(event.target)) {
+                    navbarLinks.classList.remove('active');
+                    navbarToggler.classList.remove('active');
+                }
+            });
+        }
+    });
+</script>

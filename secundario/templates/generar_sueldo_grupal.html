@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar Sueldos por Grupo</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+</head>
+
+<body>
+    <section class="layout">
+        <div class="header"> {% include 'includes/navbar.html' %}</div>
+        <div class="main-content">
+            <aside class="sidebar">
+            </aside>
+            <main class="content">
+                <div class="form-container">
+                    <h2>Generar Sueldos por Grupo de Labor</h2>
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <div class="error-message">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+
+                        <div class="button-group">
+                            <div>
+                                <button type="submit" class="btn guardar">Generar Sueldos</button>
+                            </div>
+                            <a href="{% url 'home' %}" class="btn cancelar">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </section>
+</body>
+
+</html>
