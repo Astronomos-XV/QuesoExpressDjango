@@ -1,340 +1,14 @@
+# forms.py
 from django import forms
-
-from django.contrib.auth.models import User, Group
-from .models import Empleado, Departamento, Profesion, Labor, TipoDeJornada, Nomina, Sueldo, Tasa, Asistencia, Usuarios, Liquidacion,Prestamo, ParametrosNomina, SueldoLabor, CodigoActivacionSuperuser
-from django.utils import timezone
 from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib import redirects
+from .models import Empleado, Departamento, Profesion, Labor, TipoDeJornada, Nomina, Sueldo, Tasa, Asistencia, Usuarios, Liquidacion,Prestamo, NominaNueva, ItemNomina, ConceptoNomina
+from django.utils import timezone
 from datetime import date
 from django.core.validators import RegexValidator
-from django.contrib import admin
-from django.contrib.auth.hashers import make_password
-"""
-class FormularioCodigoActivacion(forms.ModelForm):
-    codigo_nuevo = forms.CharField(
-        label="Establecer / Cambiar código de activación",
-        widget=forms.PasswordInput(render_value=False),
-        required=False,
-        min_length=6,
-        help_text="Escribe el código nuevo. Si lo dejas vacío = NO cambia nada."
-    )
-    confirmar = forms.CharField(
-        label="Confirmar código",
-        widget=forms.PasswordInput(render_value=False),
-        required=False
-    )
+from django.shortcuts import render, redirect, get_object_or_404
 
-    class Meta:
-        model = CodigoActivacionSuperuser
-        fields = []
-
-    def clean(self):
-        c1 = self.cleaned_data.get('codigo_nuevo')
-        c2 = self.cleaned_data.get('confirmar')
-        if c1 and c1 != c2:
-            raise forms.ValidationError("Los códigos no coinciden")
-        return self.cleaned_data
-
-    def save(self, commit=True):
-        instancia = super().save(commit=False)
-        if self.cleaned_data.get('codigo_nuevo'):
-            instancia.codigo_hash = make_password(self.cleaned_data['codigo_nuevo'])
-            instancia.activado = True
-        instancia.save()
-        return instancia
-"""
-
-class SuperuserForm(forms.ModelForm):
-    superuser_code = forms.CharField(
-        required=False,
-        widget=forms.PasswordInput(attrs={
-            'placeholder': 'Solo para crear superusuarios',
-            'autocomplete': 'off'
-        }),
-        label='Código de activación',
-    )
-
-    
-
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'placeholder': 'Mínimo 8 caracteres',
-            'autocomplete': 'new-password'
-        }),
-        label='Contraseña',
-        min_length=8
-    )
-
-    cedula = forms.CharField(
-        max_length=12,
-        required=False,
-        label='Cédula del empleado',
-    )
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password']
-
-    def clean(self):
-        cleaned_data = super().clean()
-        code = self.data.get('superuser_code', '').strip()  
-        cedula = cleaned_data.get('cedula', '').strip()
-
-        es_superusuario = bool(code and CodigoActivacionSuperuser.validar_codigo(code))
-
-        if es_superusuario and cedula:
-            self.add_error('cedula', 'La cédula debe estar vacía al crear un superusuario.')
-
-        if not es_superusuario:
-            if not cedula:
-                self.add_error('cedula', 'La cédula es obligatoria para usuarios normales.')
-            else:
-                try:
-                    empleado = Empleado.objects.get(cedula=cedula)
-                    if Usuarios.objects.filter(empleado=empleado).exists():
-                        self.add_error('cedula', 'Este empleado ya tiene un usuario asociado.')
-                    else:
-                        cleaned_data['empleado_obj'] = empleado
-                except Empleado.DoesNotExist:
-                    self.add_error('cedula', 'No existe empleado con esta cédula.')
-        else:
-            cleaned_data['superuser_code'] = code
-
-        return cleaned_data
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password'])
-
-        if self.cleaned_data.get('superuser_code'):
-            user.is_superuser = True
-            user.is_staff = True
-        else:
-            user.is_superuser = False
-            user.is_staff = True
-
-        if commit:
-            user.save()
-            if not user.is_superuser:
-                empleado = self.cleaned_data.get('empleado_obj')
-                if empleado:
-                    Usuarios.objects.create(user=user, empleado=empleado, puesto='Usuario Empleado')
-
-        return user
-
-"""
-class SuperuserForm(forms.ModelForm):
-    superuser_code = forms.CharField(
-        required=False,
-        widget=forms.PasswordInput(attrs={
-            'placeholder': 'Solo para crear superusuarios',
-            'autocomplete': 'off'
-        }),
-        label='Código de activación',
-        help_text='Código especial para crear superusuario. Déjelo vacío para usuario normal.'
-    )
-
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'placeholder': 'Mínimo 8 caracteres',
-            'autocomplete': 'new-password'
-        }),
-        label='Contraseña',
-        min_length=8
-    )
-
-    cedula = forms.CharField(
-        max_length=12,
-        required=False,
-        label='Cédula del empleado',
-        help_text='Obligatoria para usuarios normales. Déjela vacía si crea un superusuario.'
-    )
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password']
-        widgets = {
-            'username': forms.TextInput(attrs={'placeholder': 'Nombre de usuario'}),
-            'email': forms.EmailInput(attrs={'placeholder': 'correo@empresa.com (opcional)'}),
-        }
-
-    def clean_superuser_code(self):
-        code = self.cleaned_data.get('superuser_code', '').strip()
-        if not code:
-            return None  
-
-        if not CodigoActivacionSuperuser.validar_codigo(code):
-            from time import sleep
-            sleep(1)
-            raise forms.ValidationError("Código de activación inválido.")
-        return code
-
-    # LÓGICA: superusuario vs usuario normal
-    def clean(self):
-        cleaned_data = super().clean()
-        superuser_code = cleaned_data.get('superuser_code')
-        cedula = cleaned_data.get('cedula', '').strip()
-
-        es_superusuario = bool(superuser_code)
-
-        if es_superusuario and cedula:
-            self.add_error('cedula', 'La cédula debe estar vacía al crear un superusuario.')
-
-        if not es_superusuario:
-            if not cedula:
-                self.add_error('cedula', 'La cédula es obligatoria para usuarios normales.')
-            else:
-                try:
-                    empleado = Empleado.objects.get(cedula=cedula)
-                    if Usuarios.objects.filter(empleado=empleado).exists():
-                        self.add_error('cedula', 'Este empleado ya tiene un usuario.')
-                    cleaned_data['empleado_obj'] = empleado
-                except Empleado.DoesNotExist:
-                    self.add_error('cedula', 'No existe empleado con esta cédula.')
-
-        return cleaned_data
-
-    # GUARDADO FINAL
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password'])
-
-        es_superusuario = bool(self.cleaned_data.get('superuser_code'))
-
-        if es_superusuario:
-            user.is_superuser = True
-            user.is_staff = True
-        else:
-            user.is_superuser = False
-            user.is_staff = True  # permite entrar al admin
-
-        if commit:
-            user.save()
-            if not es_superusuario:
-                empleado = self.cleaned_data.get('empleado_obj')
-                if empleado:
-                    Usuarios.objects.create(
-                        user=user,
-                        empleado=empleado,
-                        puesto='Usuario Empleado'
-                    )
-        return user
-
-
-    def clean(self):
-        cleaned_data = super().clean()
-        superuser_code = cleaned_data.get('superuser_code')
-        cedula = cleaned_data.get('cedula', '').strip()
-
-        es_superusuario = bool(superuser_code)
-
-        if es_superusuario:
-            if cedula:
-                self.add_error('cedula', 'La cédula debe estar vacía al crear un superusuario.')
-        else:
-            if not cedula:
-                self.add_error('cedula', 'La cédula es obligatoria para usuarios normales.')
-            else:
-                try:
-                    empleado = Empleado.objects.get(cedula=cedula)
-                    if Usuarios.objects.filter(empleado=empleado).exists():
-                        self.add_error('cedula', 'Este empleado ya tiene un usuario asociado.')
-                    else:
-                        cleaned_data['empleado_obj'] = empleado
-                except Empleado.DoesNotExist:
-                    self.add_error('cedula', 'No existe un empleado con esta cédula.')
-
-        return cleaned_data
-
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password'])
-
-        es_superusuario = bool(self.cleaned_data.get('superuser_code'))
-
-        if es_superusuario:
-            user.is_superuser = True
-            user.is_staff = True
-        else:
-            user.is_superuser = False
-            user.is_staff = True 
-
-        if commit:
-            user.save()
-
-            if not es_superusuario:
-                empleado = self.cleaned_data.get('empleado_obj')
-                if empleado:
-                    Usuarios.objects.create(
-                        user=user,
-                        empleado=empleado,
-                        puesto='Usuario Empleado'
-                    )
-
-        return user
-   """ 
-class FormularioCodigoActivacion(forms.ModelForm):
-    codigo_nuevo = forms.CharField(
-        label="Código de activación (nuevo)",
-        widget=forms.PasswordInput(render_value=True),
-        min_length=6,
-        required=False,
-        help_text="Este será el código que se usará para crear superusuarios."
-    )
-    confirmar = forms.CharField(
-        label="Confirmar código",
-        widget=forms.PasswordInput(render_value=True),
-        required=False,
-        help_text="Repite el mismo código para confirmar."
-    )
-
-    class Meta:
-        model = CodigoActivacionSuperuser
-        fields = []
-
-    def clean(self):
-        cleaned_data = super().clean()
-        c1 = cleaned_data.get('codigo_nuevo')
-        c2 = cleaned_data.get('confirmar')
-
-        if c1 != c2:
-            raise forms.ValidationError("Los códigos no coinciden.")
-        if c1 and len(c1) < 6:
-            raise forms.ValidationError("El código debe tener al menos 6 caracteres.")
-        return cleaned_data
-
-    def save(self, commit=True):
-        instancia = super().save(commit=False)
-
-        if self.cleaned_data.get('codigo_nuevo'):
-            instancia.codigo_hash = make_password(self.cleaned_data['codigo_nuevo'])
-            instancia.activado = True
-
-        if commit:
-            instancia.save()
-        return instancia
-
-    class Meta:
-        model = CodigoActivacionSuperuser
-        fields = []
-
-    def clean(self):
-        c1 = self.cleaned_data.get('codigo_nuevo')
-        c2 = self.cleaned_data.get('confirmar')
-        if c1 != c2:
-            raise forms.ValidationError("Los códigos no coinciden")
-        if c1 and len(c1) < 6:
-            raise forms.ValidationError("El código debe tener mínimo 6 caracteres")
-        return self.cleaned_data
-
-    def save(self, commit=True):
-        instancia = super().save(commit=False)
-        if self.cleaned_data.get('codigo_nuevo'):
-            instancia.codigo_hash = make_password(self.cleaned_data['codigo_nuevo'])
-            instancia.activado = True
-        if commit:
-            instancia.save()
-        return instancia
 
 cedula_validator = RegexValidator(
     r'^\d+$',
@@ -345,22 +19,10 @@ telefono_validator = RegexValidator(
     'El teléfono debe contener solo números.'
 )
 
-
-
-
 class EmpleadoForm(forms.ModelForm):
     class Meta:
         model = Empleado
-        fields = ['cedula','nombre', 'apellido','activo', 'telefono', 'correo', 'fecha_contratacion', 'id_pro', 'id_depa', 'id_trabajo', 'id_jornada']
-
-    
-    activo = forms.BooleanField(  
-        required=False,
-        widget=forms.CheckboxInput(attrs={
-            'class': 'form-check-input', 
-            'id': 'empleado-activo',
-        })
-    )
+        fields = ['cedula','nombre', 'apellido', 'telefono', 'correo', 'fecha_contratacion', 'id_depa', 'id_pro', 'id_trabajo', 'id_jornada']
 
     cedula = forms.CharField(
         max_length=10,
@@ -369,7 +31,6 @@ class EmpleadoForm(forms.ModelForm):
         ],
         help_text="Solo números (ej. 12345678)"
     )
-
     telefono = forms.CharField(
         max_length=11,
         required=True,
@@ -386,10 +47,7 @@ class EmpleadoForm(forms.ModelForm):
             'type': 'date',
             'min': '2010-01-01',
             'max': f'{timezone.now().year}-12-31'
-        },
-        
-        format='%Y-%m-%d'
-        ),
+        }),
         help_text="Ingrese la fecha de contratación. (Rango: 2010 - Año actual)"
     )
 
@@ -398,35 +56,33 @@ class EmpleadoForm(forms.ModelForm):
     id_trabajo = forms.ModelChoiceField(queryset=Labor.objects.all(), label="Labor")
     id_jornada = forms.ModelChoiceField(queryset=TipoDeJornada.objects.all(), label="Tipo de Jornada")
 
-    
-    def save(self, commit=True):
-        empleado_instance = super().save(commit=commit)
-
-        if commit:
-
-            empleado_instance.toggle_cuenta_activa() 
-        
-        return empleado_instance
-
-
-
-
 class SueldoForm(forms.ModelForm):
     class Meta:
         model = Sueldo
-        fields = [
-            'id_empleado', 
-            'id_labor', 
-            'id_tasa', 
-        ]
+        fields = ['id_empleado', 'id_jornada', 'id_tasa']
+        labels = {
+            'id_empleado': 'Empleado',
+            'id_jornada': 'Tipo de Jornada',
+            'id_tasa': 'Tasa Activa'
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+
         self.fields['id_tasa'].queryset = Tasa.objects.filter(activa=True)
+
 
         self.fields['id_empleado'].queryset = Empleado.objects.all().order_by('nombre')
         self.fields['id_empleado'].label_from_instance = lambda obj: f"{obj.nombre} {obj.apellido} ({obj.cedula})"
+
+
+        jornadas = TipoDeJornada.objects.all()
+        self.fields['id_jornada'].queryset = jornadas
+        for jornada in jornadas:
+            self.fields['id_jornada'].widget.attrs.update({
+                f'data-{jornada.id_jornada}-horas': jornada.horas_semanales
+            })
 
 class DepartamentoForm(forms.ModelForm):
     class Meta:
@@ -446,33 +102,20 @@ class LaborForm(forms.ModelForm):
 class TipoDeJornadaForm(forms.ModelForm):
     class Meta:
         model = TipoDeJornada
-        fields = [
-            'nombre_jornada', 
-            'horas_diarias'  ]
+        fields = ['nombre_jornada', 'horas_semanales', 'sueldo_semanal_usd']
 
 class NominaForm(forms.ModelForm):
     class Meta:
         model = Nomina
         fields = [
-            'id_empleado', 
-            'id_sueldo', 
-            'id_trabajo', 
-            'periodo_inicio', 
-            'periodo_fin',
-            'tipo_periodo',
-            
-            'total_asignaciones_bs', 
-            'total_deducciones_bs', 
-            'sueldo_neto_bs'
+            'id_empleado', 'id_sueldo', 'id_trabajo', 'periodo_inicio', 'periodo_fin',
+            'tipo_periodo', 'sueldo_bs_base', 'cestaticket_bs',  'horas_extras',
+            'horas_ordinarias', 'pago_horas_extras_bs', 'horas_festivas',
+            'pago_horas_festivas_bs', 'dias_vacaciones', 'dias_enfermedad',
+            'total_asignaciones_bs', 'ivss_bs', 'rpe_bs', 'faov_bs',
+            'total_deducciones_bs', 'sueldo_neto_bs'
         ]
-        
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-        if self.instance.pk: 
-            self.fields['total_asignaciones_bs'].widget.attrs['readonly'] = 'readonly'
-            self.fields['total_deducciones_bs'].widget.attrs['readonly'] = 'readonly'
-            self.fields['sueldo_neto_bs'].widget.attrs['readonly'] = 'readonly'
+
 
 
 class BuscarNominaForm(forms.Form):
@@ -486,26 +129,6 @@ class BuscarNominaForm(forms.Form):
     )
 
 
-class NominaDepartamentalForm(forms.Form):
-    fecha_inicio = forms.DateField(
-        widget=forms.DateInput(attrs={
-            'type': 'date',
-            'class': 'form-control',
-            'required': 'required'
-        }),
-        label="Fecha de inicio (lunes de la semana)",
-        help_text="Selecciona el lunes que inicia la semana a procesar"
-    )
-
-    departamentos = forms.ModelMultipleChoiceField(
-        queryset=Departamento.objects.filter().order_by('nombre_depa'),
-        widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'form-check-input'
-        }),
-        label="Seleccionar Departamentos",
-        help_text="Marca todos los departamentos que deseas incluir en esta nómina",
-        required=True
-    )
 
 
 class AsistenciaForm(forms.ModelForm):
@@ -521,62 +144,102 @@ class AsistenciaForm(forms.ModelForm):
         self.initial['asistio'] = False
         self.fields['id_empleado'].queryset = Empleado.objects.all()
 
-    def clean(self):
-        cleaned_data = super().clean()
-        
-        empleado = cleaned_data.get('id_empleado')
-        fecha_asistencia = cleaned_data.get('fecha_asistencia')
-        
-        if empleado and fecha_asistencia:
-            
-            try:
-                fecha_contratacion = empleado.fecha_contratacion
-            except AttributeError:
-                raise forms.ValidationError(
-                    "Error interno: El modelo Empleado no tiene el campo 'fecha_contratacion'."
-                )
 
-            if fecha_asistencia < fecha_contratacion:
-                
-                raise forms.ValidationError(
-                    f"La fecha de inasistencia ({fecha_asistencia.strftime('%d/%m/%Y')}) "
-                    f"no puede ser anterior a la fecha de contratación del empleado "
-                    f"({fecha_contratacion.strftime('%d/%m/%Y')})."
-                )
-                
-        return cleaned_data
 """
 Formulario para crear nuevos usuarios si es un superusuario o es un usuario normal
 
 """
-""""""
+
+class SuperuserForm(forms.ModelForm):
+    SUPERUSER_CODE = "62425"
+
+    superuser_code = forms.CharField(
+        required=False,
+        label='Código de Superusuario (opcional)',
+        help_text='Ingrese el código especial para crear un superusuario, déjelo vacío para un usuario normal.'
+    )
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    
+    cedula = forms.CharField(
+        max_length=10,
+        required=False, 
+        label='Cédula del Empleado (para usuarios normales)',
+        help_text='Ingrese la cédula del empleado para el usuario normal.'
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'cedula']
+
+    def clean_superuser_code(self):
+        code = self.cleaned_data.get('superuser_code')
+        if code and code != self.SUPERUSER_CODE:
+            raise forms.ValidationError('Código de superusuario incorrecto')
+        return code
+
+    def clean(self):
+        cleaned_data = super().clean()
+        superuser_code = cleaned_data.get('superuser_code')
+        cedula = cleaned_data.get('cedula')
+
+        is_creating_superuser = (superuser_code == self.SUPERUSER_CODE)
+
+        if not is_creating_superuser:
+            if not cedula:
+                self.add_error('cedula', 'La cédula es obligatoria para crear un usuario normal.')
+            else:
+                try:
+                    cedula_validator(cedula)
+                    empleado = Empleado.objects.get(cedula=cedula)
+                    if Usuarios.objects.filter(empleado=empleado).exists():
+                        self.add_error('cedula', 'Esta cédula ya está asociada a otro usuario.')
+                    cleaned_data['empleado_obj'] = empleado 
+                except Empleado.DoesNotExist:
+                    self.add_error('cedula', 'No existe un empleado con la cédula proporcionada.')
+                except forms.ValidationError as e:
+                    self.add_error('cedula', e.message)
+        else:
+            if cedula:
+                self.add_error('cedula', 'La cédula debe dejarse vacía al crear un superusuario.')
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+
+        is_creating_superuser = (self.cleaned_data.get('superuser_code') == self.SUPERUSER_CODE)
+
+        if is_creating_superuser:
+            user.is_superuser = True
+            user.is_staff = True
+        else:
+            user.is_superuser = False
+            user.is_staff = False
+
+        if commit:
+            user.save()
+
+            if not is_creating_superuser:
+                empleado = self.cleaned_data.get('empleado_obj') 
+                if empleado:
+                    Usuarios.objects.create(user=user, empleado=empleado, puesto='Usuario Empleado')
+
+        return user
+
 
 class NominaGrupalForm(forms.Form):
-    labor = forms.ModelChoiceField(
-        queryset=Labor.objects.all(),
-        label='Seleccionar Labor para Generar Nómina'
-    )
-    fecha_inicio = forms.DateField(
-        label='Fecha de Inicio del Período',
-        widget=forms.DateInput(attrs={'type': 'date'}),
-        help_text='Indique la fecha de inicio del período de 7 días (semanal).'
-    )
+    labor = forms.ModelChoiceField(queryset=Labor.objects.all(), label="Tipo de Labor")
+    tipo_periodo = forms.ChoiceField(choices=Nomina.TIPO_PERIODO_CHOICES, label="Tipo de Período")
+    fecha_inicio = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label="Fecha de Inicio")
+    fecha_fin = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label="Fecha de Fin")
 
 class SueldoGrupalForm(forms.Form):
-    labor = forms.ModelChoiceField(
-        queryset=Labor.objects.all(), 
-        label="Labor a la que aplica el sueldo"
-    )
-    
-    jornada = forms.ModelChoiceField(
-        queryset=TipoDeJornada.objects.all(), 
-        label="Tipo de Jornada (Filtro de Empleado)"
-    )
-    
-    tasa = forms.ModelChoiceField(
-        queryset=Tasa.objects.filter(activa=True), 
-        label="Tasa de Cambio (USD a Bs)"
-    )
+    labor = forms.ModelChoiceField(queryset=Labor.objects.all(), label="Tipo de Labor")
+    jornada = forms.ModelChoiceField(queryset=TipoDeJornada.objects.all(), label="Tipo de Jornada")
+    tasa = forms.ModelChoiceField(queryset=Tasa.objects.filter(activa=True), label="Tasa Activa")
+
 
 class LiquidacionForm(forms.ModelForm):
  
@@ -710,60 +373,25 @@ class PrestamoForm(forms.ModelForm):
             
         return cleaned_data
 
-
-class ParametrosNominaForm(forms.ModelForm):
-    """
-    Formulario para crear o actualizar un Concepto/Regla de Nómina.
-    """
+class NominaNuevaForm(forms.ModelForm):
     class Meta:
-        model = ParametrosNomina
-        fields = ['nombre', 'tipo', 'periodicidad', 'monto_fijo','monto_fijo_usd', 'porcentaje', 'es_concepto_fijo']
-        
+        model = NominaNueva
+        fields = ['empleado', 'sueldo', 'periodo_inicio', 'periodo_fin', 'estado']
         widgets = {
-            'monto_fijo': forms.NumberInput(attrs={'step': '0.01', 'min': '0'}),
-            'porcentaje': forms.NumberInput(attrs={'step': '0.0001', 'min': '0', 'max': '2'}), 
+            'periodo_inicio': forms.DateInput(attrs={'type': 'date'}),
+            'periodo_fin': forms.DateInput(attrs={'type': 'date'}),
         }
 
-        labels = {
-            'nombre': 'Nombre del Concepto/Regla',
-            'tipo': 'Tipo (Asignación o Deducción)',
-            'periodicidad': 'Frecuencia de Aplicación',
-            'monto_fijo_usd': 'Monto/Valor (Bs)',
-            'monto_usd': 'Monto/Valor (USD)',
-            'porcentaje': 'Porcentaje/Tasa (Ej: 0.05)',
-            'es_concepto_fijo': 'Es una Tasa o Factor Fijo Global',
-        }
-    
-
-    def clean_porcentaje(self):
-        value = self.cleaned_data.get('porcentaje')
-        if value is not None and (value < 0 or value > 2):
-            raise forms.ValidationError("El porcentaje debe ser un valor entre 0 y 1 (ej. 0.04 para 4%).")
-        return value
-    
-
-
-class SueldoLaborForm(forms.ModelForm):
-    """
-    Formulario para crear o actualizar el sueldo base semanal USD de un cargo (Labor).
-    """
-    class Meta:
-        model = SueldoLabor
-        fields = ['id_labor', 'sueldo_base_semanal_usd'] 
-        
-        widgets = {
-            'sueldo_base_semanal_usd': forms.NumberInput(attrs={'step': '0.01', 'min': '0'}),
-        }
-        labels = {
-            'id_labor': 'Cargo o Labor',
-            'sueldo_base_semanal_usd': 'Sueldo Base Semanal (USD)',
-        }
-    
-    def clean_id_labor(self):
-        id_labor = self.cleaned_data.get('id_labor')
-        if not self.instance.pk:
-            if SueldoLabor.objects.filter(id_labor=id_labor).exists():
-                raise forms.ValidationError("Ya existe un sueldo base en USD asignado para este Cargo/Labor.")
-        return id_labor
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['sueldo'].queryset = Sueldo.objects.none()
+        if 'empleado' in self.data:
+            try:
+                empleado_id = int(self.data.get('empleado'))
+                self.fields['sueldo'].queryset = Sueldo.objects.filter(id_empleado=empleado_id)
+            except:
+                pass
+        elif self.instance.pk and self.instance.empleado:
+            self.fields['sueldo'].queryset = Sueldo.objects.filter(id_empleado=self.instance.empleado)
 
 

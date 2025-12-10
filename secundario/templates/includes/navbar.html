@@ -2,34 +2,9 @@
 
 <nav class="navbar">
     <div class="navbar-brand">
-        <a href="{% url 'home' %}">QE</a>
+        <a href="{% url 'home' %}">Queso Express</a>
     </div>
 
-<div class="navbar-links" id="navbarLinks">
-        <ul>
-            {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <span class="nav-link" style="color: white; padding-right: 15px;">
-                        Bienvenido, <strong>{{ user.username }}</strong>
-                    </span>
-                </li>
-                <li class="nav-item">
-                    <span class="nav-link" style="color: #ccc; font-size: 0.9em;">
-                        Rol: 
-                        {% for group in user.groups.all %}
-                            {{ group.name }}{% if not forloop.last %}, {% endif %}
-                        {% empty %}
-                            (Sin grupo)
-                        {% endfor %}
-                    </span>
-                </li>
-            {% endif %}
-
-            <li>
-                <a class="btn btn-danger" href="{% url 'cerrar_sesion' %}"><strong>Salir</strong></a>
-            </li>
-        </ul>
-    </div>
     <button class="navbar-toggler" id="navbarToggler">
         <span class="navbar-toggler-icon"></span>
         <span class="navbar-toggler-icon"></span>
@@ -38,10 +13,6 @@
 
     <div class="navbar-links" id="navbarLinks">
         <ul>
-            <li>
-                <a class="linked" href="{% url 'listar_empleados' %}">Empleados</a>
-            </li>
-
             <li>
                 <a class="linked" href="{% url 'gestion_datos' %}" class="nav-link">Tablas</a>
             </li>
@@ -60,7 +31,7 @@
                 <a class="linked" href="{% url 'gestion_datos' %}?form=jornada" class="nav-link"> Jornada</a>
             </li>
             <li>
-                <a class="linked" href="{% url 'sueldo_lista' %}" class="nav-link">Sueldo</a>
+                <a class="linked" href="{% url 'sueldo_creacion' %}" class="nav-link">Sueldo</a>
             </li>
             <li>
                 <a class="linked" href="{% url 'inasistencia_list' %}" class="nav-link">Asistencias</a>
@@ -72,9 +43,9 @@
 
 
 
-           <!-- <li>
+            <li>
                 <a class="btn btn-danger" href="{% url 'cerrar_sesion' %}"><strong>Salir</strong></a>
-            </li> -->
+            </li>
         </ul>
     </div>
 </nav>

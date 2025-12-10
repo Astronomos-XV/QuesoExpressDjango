@@ -19,49 +19,22 @@
         <div class="main">
             <main>
                 {% block content %}
-
                 <h1>Bienvenido a Queso Express</h1>
                 <p class="bold">Aquí puede encontrar los empleados de la empresa</p>
                 <div class="button-group">
                     <a class="btn" href="{% url 'crear_empleado' %}">Registrar Empleados</a>
                     <a class="btn" href="{% url 'listar_empleados' %}">Mostrar Listado de Empleados</a>
-                    <a class="btn" href="{% url 'generar_nomina_departamento' %}">Generar Nominas</a>
-
+                    <a class="btn" href="{% url 'generar_nomina_grupal' %}">Generar Nominas</a>
+                    <a class="btn" href="{% url 'sueldo_lista' %}">Ver Sueldos</a>
                     <a class="btn" href="{% url 'tasa' %}">Ver Tasas</a>
-                    <a class="btn" href="{% url 'crear_concepto_nomina' %}">Parametros</a>
-                    <a class="btn" href="{% url 'gestionar_conceptos_nomina' %}">Listado de Parametros</a>
-
-
                     <a href="{% url 'lista_liquidaciones' %}" class="btn ">
                         Liquidaciones</a>
-                        <!--
                     <a href="{% url 'eliminar_todas_nominas' %}" class="btn btn-danger"
                         onclick="return confirm('¿Está seguro de eliminar TODAS las nóminas? Esta acción es irreversible.');">
                         Eliminar Todas las Nóminas
-                    </a>  -->
-                    <a href="{% url 'sueldo_labor_list_create' %} " class="btn">Labores Por Sueldo</a>
-
+                    </a>
                     <a href="{% url 'listar_prestamos' %} " class="btn">Prestamos</a>
 
-                </div>
-                <div class="card-body">
-                    <div class="table-listing-container">
-                    <form method="GET" action="{% url 'home' %}">
-                        <label for="cedula_input">Cédula:</label>
-                        <input type="text" id="cedula_input" name="cedula" value="{{ filtros.cedula }}"
-                            placeholder="Cédula del empleado">
-
-                        <label for="nombre_input">Nombre/Apellido:</label>
-                        <input type="text" id="nombre_input" name="nombre" value="{{ filtros.nombre }}"
-                            placeholder="Nombre o Apellido">
-                        <div class="button-group">
-                        <button type="submit" class="btn ">Buscar Nóminas</button>
-                        {% if filtros.cedula or filtros.nombre %}
-                        <a href="{% url 'home' %}" class="btn btn-secondary">Limpiar Filtros</a>
-                        {% endif %}
-                        </div>
-                    </form>
-                    </div>
                 </div>
                 <div class="table-listing-container">
                     <h2 class="table-title">Lista de Nominas</h2>
@@ -69,60 +42,54 @@
 
                         <thead>
                             <tr>
-                                <!-- <th>ID Nómina</th>-->
+                                <th>ID Nómina</th>
                                 <th>Empleado</th>
                                 <th>Labor</th>
-                                <th>Periodo</th>
-                                <th>Fecha de Inicio</th>
-                                <th>Fecha Final</th>
-                                <!-- <th>Cestaticket (Bs)</th>
-                                <th>Prestaciones (Bs)</th>
+                                <th>Período</th>
+                                <th>Sueldo Base (Bs)</th>
+                                <th>Cestaticket (Bs)</th>
+                                <!--<th>Prestaciones (Bs)</th>-->
                                 <th>Horas Extras</th>
                                 <th>Pago Extras (Bs)</th>
                                 <th>Horas Festivas</th>
-                                <th>Pago Festivas (Bs)</th>-->
+                                <th>Pago Festivas (Bs)</th>
                                 <th>Total Asignaciones (Bs)</th>
                                 <th>Total Deducciones (Bs)</th>
                                 <th>Sueldo Neto (Bs)</th>
+                                <th>Fecha Emisión</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for nomina in nominas %}
                             <tr>
-                                <!--<td data-label="ID Nómina">{{ nomina.id_nomina }}</td>-->
+                                <td data-label="ID Nómina">{{ nomina.id_nomina }}</td>
                                 <td data-label="Empleado">{{ nomina.id_empleado.nombre }}
                                     {{ nomina.id_empleado.apellido}}</td>
                                 <td data-label="Labor">{{ nomina.id_trabajo.nombre_trabajo }}</td>
                                 <td data-label="Período">{{ nomina.tipo_periodo }}</td>
-                                <td data-label="Sueldo Base (Bs)">{{ nomina.periodo_inicio }}</td>
-                                <td data-label="Sueldo Base (Bs)">{{ nomina.periodo_fin }}</td>
-                                <!-- <td data-label="Cestaticket (Bs)">{{ nomina.cestaticket_bs }}</td>
-                                <td data-label="Prestaciones (Bs)">{{ nomina.pago_prestaciones_bs }}</td>
+                                <td data-label="Sueldo Base (Bs)">{{ nomina.sueldo_bs_base }}</td>
+                                <td data-label="Cestaticket (Bs)">{{ nomina.cestaticket_bs }}</td>
+                                <!--<td data-label="Prestaciones (Bs)">{{ nomina.pago_prestaciones_bs }}</td>-->
                                 <td data-label="Horas Extras">{{ nomina.horas_extras }}</td>
                                 <td data-label="Pago Extras (Bs)">{{ nomina.pago_horas_extras_bs }}</td>
                                 <td data-label="Horas Festivas">{{ nomina.horas_festivas }}</td>
-                                <td data-label="Pago Festivas (Bs)">{{ nomina.pago_horas_festivas_bs }}</td>-->
+                                <td data-label="Pago Festivas (Bs)">{{ nomina.pago_horas_festivas_bs }}</td>
                                 <td data-label="Total Asignaciones (Bs)">{{ nomina.total_asignaciones_bs }}</td>
                                 <td data-label="Total Deducciones (Bs)">{{ nomina.total_deducciones_bs }}</td>
                                 <td data-label="Sueldo Neto (Bs)">{{ nomina.sueldo_neto_bs }}</td>
-
+                                <td data-label="Fecha Emisión">{{ nomina.fecha_emision|date:"d \d\e F \d\e Y" }}</td>
                                 <td data-label="Acciones" class="action-buttons">
                                     <div>
-                                        <!--   <a href="{% url 'editar_nomina' nomina.id_nomina %}" class="btn btn-warning">
+                                        <a href="{% url 'editar_nomina' nomina.id_nomina %}" class="btn btn-warning">
                                             Editar
                                         </a>
-                                      <a href="{% url 'eliminar_nomina' nomina.id_nomina %}" class="btn btn-danger"
+                                        <a href="{% url 'eliminar_nomina' nomina.id_nomina %}" class="btn btn-danger"
                                             onclick="return confirm('¿Está seguro de eliminar esta nómina?');">
                                             Eliminar
-                                        </a>-->
+                                        </a>
                                         <a href="{% url 'exportar_nomina_pdf' nomina.id_nomina %}"
                                             class="btn btn-primary">Exportar a PDF</a>
-
-                                        <a href="{% url 'ver_concepto_nomina' pk=nomina.pk %}" class="btn btn-primary"
-                                            style="margin-left: 15px;">
-                                            Ver Conceptos
-                                        </a>
                                     </div>
                                 </td>
                             </tr>

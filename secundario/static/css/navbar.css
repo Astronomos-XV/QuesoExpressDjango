@@ -24,7 +24,7 @@
 .navbar-links ul {
     list-style: none;
     margin: 0;
-    padding: 5;
+    padding: 0;
     display: flex;
     gap: 25px;
     align-items: center;

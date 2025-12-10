@@ -10,9 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
     <link rel="stylesheet" href="{% static 'css/form.css' %}">
-    
-    <script src="{% static 'js/sueldo.js' %}" defer></script> 
-    
+    <script src="{% static 'js/sueldo.js' %}" defer></script>
     <style>
         .campo-calculado {
             background-color: #f8f9fa;
@@ -48,34 +46,58 @@
                             <p>Seleccione un empleado para ver su información actual</p>
                         </div>
 
-                        <div class="form-group">
-                            <label for="{{ form.id_empleado.id_for_label }}">Empleado:</label>
-                            {{ form.id_empleado }}
-                            {% if form.id_empleado.errors %}<small class="text-danger">{{ form.id_empleado.errors }}</small>{% endif %}
-                        </div>
 
                         <div class="form-group">
-                            <label for="{{ form.id_labor.id_for_label }}">Labor (Cargo):</label>
-                            {{ form.id_labor }}
+                            <label for="id_empleado">Empleado:</label>
+                            <select name="id_empleado" id="id_empleado" class="form-control" required>
+                                <option value="">Seleccione un empleado</option>
+                                {% for empleado in empleados %}
+                                <option value="{{ empleado.id_empleado }}"
+                                    data-jornada="{{ empleado.id_jornada.id_jornada }}"
+                                    data-sueldo-actual="{{ empleado.id_jornada.horas_semanales }}"
+                                    data-jornada-nombre="{{ empleado.id_jornada.nombre_jornada }}"
+                                    data-jornada-sueldo="{{ empleado.id_jornada.sueldo_semanal_usd }}">
+                                    {{ empleado.nombre }} {{ empleado.apellido }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="id_jornada">Jornada:</label>
+                            <select name="id_jornada" id="id_jornada" class="form-control" readonly>
+                                {% for jornada in jornadas %}
+                                <option value="{{ jornada.id_jornada }}"
+                                    data-sueldo-usd="{{ jornada.sueldo_semanal_usd }}"
+                                    data-horas="{{ jornada.horas_semanales }}">
+                                    {{ jornada.nombre_jornada }} ({{ jornada.sueldo_semanal_usd }} USD/semana)
+                                </option>
+                                {% endfor %}
+                            </select>
                             <small class="text-muted">
-                                El sueldo base semanal (USD) está asociado a esta Labor/Cargo.
+
                             </small>
-                            {% if form.id_labor.errors %}<small class="text-danger">{{ form.id_labor.errors }}</small>{% endif %}
                         </div>
 
                         <div class="form-group">
-                            <label for="{{ form.id_tasa.id_for_label }}">Tasa de cambio:</label>
-                            {{ form.id_tasa }}
-                            {% if form.id_tasa.errors %}<small class="text-danger">{{ form.id_tasa.errors }}</small>{% endif %}
+                            <label for="id_tasa">Tasa de cambio:</label>
+                            <select name="id_tasa" id="id_tasa" class="form-control" required>
+                                {% for tasa in tasas %}
+                                <option value="{{ tasa.id_tasa }}" data-valor-tasa="{{ tasa.valor_tasa }}">
+                                    {{ tasa.valor_tasa|floatformat:2 }} Bs/USD ({{ tasa.fecha|date:"d/m/Y" }})
+                                </option>
+                                {% endfor %}
+                            </select>
                         </div>
 
                         <div class="form-group">
                             <label>Sueldo calculado:</label>
                             <div class="resultado-calculo" id="resultado-calculo">
-                                El sueldo se calcula en el servidor al momento de guardar.
+                                Seleccione jornada y tasa para ver el cálculo
                             </div>
                             <small class="text-muted">
-                                **Fórmula utilizada:** Sueldo Base Semanal del Cargo (USD) × Tasa (Bs/USD) = Sueldo semanal (Bs)
+                                Fórmula: Sueldo semanal (USD) × Tasa (Bs/USD) = Sueldo semanal (Bs)
                             </small>
                         </div>
 
@@ -93,6 +115,10 @@
             </main>
         </div>
     </section>
+
+
+
+
 </body>
 
 </html>

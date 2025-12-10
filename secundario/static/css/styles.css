@@ -99,16 +99,6 @@ p.bold {
     transform: translateY(-2px);
 }
 
-.btn-success {
-    background-color: #008000;
-    color: white;
-}
-
-.btn-success:hover {
-    background-color: #013501;
-    transform: translateY(-2px);
-}
-
 .btn-primary {
     background-color: #007bff;
     color: white;

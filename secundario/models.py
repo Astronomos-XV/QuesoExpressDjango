@@ -2,37 +2,6 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
-from django.core.exceptions import ValidationError
-from django.contrib.auth.hashers import make_password, check_password
-
-
-from django.db import models
-from django.contrib.auth.hashers import check_password
-
-class CodigoActivacionSuperuser(models.Model):
-    codigo_hash = models.CharField(max_length=255, blank=True, verbose_name="Código (hash)")
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
-    activado = models.BooleanField(default=False, help_text="Se marca cuando ya se usó por primera vez")
-
-    class Meta:
-        verbose_name = "Código de Activación de Superusuarios"
-        verbose_name_plural = "Código de Activación de Superusuarios"
-
-    def __str__(self):
-        return "Código de Activación de Superusuarios"
-
-    @classmethod
-    def validar_codigo(cls, codigo_plano: str) -> bool:
-        """
-        Este es EL ÚNICO sitio donde se valida el código.
-        Si funciona aquí → funciona en todos lados.
-        """
-        obj, _ = cls.objects.get_or_create(pk=1)  
-        if not obj.codigo_hash:
-            return False
-        return check_password(codigo_plano, obj.codigo_hash)
-
-
 
 
 class Usuarios(models.Model):  
@@ -58,16 +27,11 @@ class Profesion(models.Model):
 class TipoDeJornada(models.Model):  
     id_jornada = models.AutoField(primary_key=True)  
     nombre_jornada = models.CharField(max_length=100)  
-    
-    horas_diarias = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('8.00'), 
-                                       verbose_name="Horas Diarias de Trabajo") 
+    horas_semanales = models.IntegerField()
+    sueldo_semanal_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0.00) 
 
-    @property
-    def horas_semanales(self):
-        return self.horas_diarias * 5
-    
     def __str__(self):  
-        return f"{self.nombre_jornada} ({self.horas_semanales} hrs/sem)"
+        return self.nombre_jornada
 
 
 class Labor(models.Model):  
@@ -81,7 +45,6 @@ class Empleado(models.Model):
     id_empleado = models.AutoField(primary_key=True)  
     cedula = models.CharField(max_length=10, unique=True, null=False, blank=False,)
     nombre = models.CharField(max_length=100)  
-    activo = models.BooleanField (default=True)
     apellido = models.CharField(max_length=100)
     telefono = models.CharField(max_length=11, blank=True, null=True,)  
     correo = models.EmailField(blank=True, null=True)  
@@ -90,34 +53,6 @@ class Empleado(models.Model):
     id_pro = models.ForeignKey(Profesion, on_delete=models.CASCADE)  
     id_trabajo = models.ForeignKey(Labor, on_delete=models.CASCADE)  
     id_jornada = models.ForeignKey(TipoDeJornada, on_delete=models.CASCADE)
-
-    def cuenta_activa(self) -> bool:
-        """Devuelve el estado 'is_active' del usuario relacionado."""
-        try:
-            return self.user_account.user.is_active
-        except Usuarios.DoesNotExist:
-            return False
-
-    def toggle_cuenta_activa(self, nuevo_estado: bool = None) -> bool:
-        """
-        
-        """
-        try:
-            user_obj = self.user_account.user
-        except Usuarios.DoesNotExist:
-            
-            return False
-
-        if nuevo_estado is None:
-            nuevo_estado = not user_obj.is_active
-            print(nuevo_estado)
-
-        if user_obj.is_active != self.activo:
-            user_obj.is_active = self.activo
-            user_obj.save(update_fields=['is_active'])
-            return True 
-        
-        return False 
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}" 
@@ -136,98 +71,53 @@ class Tasa(models.Model):
 class Sueldo(models.Model):
     id_sueldo = models.AutoField(primary_key=True)
     id_empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, verbose_name="Empleado")
-    id_labor = models.ForeignKey('Labor', on_delete=models.CASCADE, verbose_name="Labor") 
-    id_tasa = models.ForeignKey('Tasa', on_delete=models.CASCADE, verbose_name="Tasa")
-    sueldo_usd_referencia = models.DecimalField(max_digits=10, decimal_places=2, editable=False) 
+    id_jornada = models.ForeignKey(TipoDeJornada, on_delete=models.CASCADE, verbose_name="Jornada")
+    id_tasa = models.ForeignKey(Tasa, on_delete=models.CASCADE, verbose_name="Tasa")
     sueldo_bs = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
     fecha_creacion = models.DateField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        try:
-            sueldo_base = self.id_labor.sueldolabor.sueldo_base_semanal_usd
-        except SueldoLabor.DoesNotExist:
-            raise ValueError(f"La Labor '{self.id_labor.nombre_trabajo}' no tiene un Sueldo Base (SueldoLabor) asignado.")
-            
-        if self.id_tasa:
-            self.sueldo_usd_referencia = sueldo_base
-            self.sueldo_bs = sueldo_base * self.id_tasa.valor_tasa
+        if self.id_jornada and self.id_tasa:
+            self.sueldo_bs = self.id_jornada.sueldo_semanal_usd * self.id_tasa.valor_tasa
         super().save(*args, **kwargs)
-
-    class Meta:
-        verbose_name = "Sueldo Liquidado (Histórico)"
-        verbose_name_plural = "Sueldos Liquidados (Históricos)"
-
-class DetalleConceptoNomina(models.Model):
-    id_detalle = models.AutoField(primary_key=True)
-    
-    id_nomina = models.ForeignKey('Nomina', on_delete=models.CASCADE, related_name='detalles_personalizados', verbose_name="Nómina")
-    
-    id_regla = models.ForeignKey('ParametrosNomina', on_delete=models.CASCADE, null=True, blank=True)
-    
-    nombre_concepto = models.CharField(max_length=150, verbose_name="Nombre del Concepto")
-    tipo_concepto = models.CharField(max_length=10, verbose_name="Tipo (Asignación/Deducción)") 
-    monto_calculado_bs = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Monto Calculado (Bs)")
-
-    class Meta:
-        verbose_name = "Detalle de Concepto Personalizado"
-        verbose_name_plural = "Detalles de Conceptos Personalizados"
-        unique_together = ('id_nomina', 'id_regla') 
-        
-    def __str__(self):
-        return f"Detalle {self.nombre_concepto} para Nómina #{self.id_nomina.id_nomina}"
-
-class ConceptoNomina(models.Model):
-    id_nomina = models.OneToOneField('Nomina', on_delete=models.CASCADE, primary_key=True, verbose_name="Nómina")
-    pago_bonos_bs = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'), verbose_name="Pago de Bonos Extra (Bs)")
-    sueldo_bs_base = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Sueldo Base (Bs)")
-    pago_recargo_nocturno_bs = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2, 
-        default=Decimal('0.00'), 
-        verbose_name="Pago Recargo Nocturno (Bs)"
-    )
-    cestaticket_bs = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Cestaticket (Bs)")
-    horas_ordinarias = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('0.00'), verbose_name="Horas Ordinarias")
-    horas_extras = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('0.00'), verbose_name="Total Horas Extras")
-    pago_horas_extras_bs = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Pago Horas Extras (Bs)")
-    horas_festivas = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('0.00'), verbose_name="Total Horas Festivas")
-    pago_horas_festivas_bs = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Pago Horas Festivas (Bs)")
-    dias_vacaciones = models.IntegerField(default=0, verbose_name="Días de Vacaciones Pagados")
-    dias_enfermedad = models.IntegerField(default=0, verbose_name="Días de Inasistencia (Deducidos)") 
-    inces_bs = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Deducción INCES (Bs)")
-    ivss_bs = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Deducción IVSS (Bs)")
-    rpe_bs = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Deducción RPE (Bs)")
-    faov_bs = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Deducción FAOV (Bs)")
-    pago_inasistencias_bs = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Deducción Inasistencias (Bs)")
-    pago_prestamo_bs = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Deducción Préstamo (Bs)")
-
-    total_asignaciones_bs = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Total Asignaciones")
-    total_deducciones_bs = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Total Deducciones")
-
-    class Meta:
-        verbose_name = "Concepto de Nómina"
-        verbose_name_plural = "Conceptos de Nómina"
-        
-    def __str__(self):
-        return f"Conceptos de Nómina #{self.id_nomina.id_nomina}"
 
 
 
 
 class Nomina(models.Model):
-    id_nomina = models.AutoField(primary_key=True)
-    id_empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, verbose_name="Empleado")
-    id_sueldo = models.ForeignKey(Sueldo, on_delete=models.CASCADE, verbose_name="Sueldo")
-    id_trabajo = models.ForeignKey(Labor, on_delete=models.CASCADE, verbose_name="Labor")
-    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
-    periodo_inicio = models.DateField(verbose_name="Período de Inicio")
-    periodo_fin = models.DateField(verbose_name="Período de Fin")
-    tipo_periodo = models.CharField(max_length=50, verbose_name="Tipo de Período")
+    TIPO_PERIODO_CHOICES = [
+        ('semanal', 'Semanal'),
+       
+    ]
 
-    total_asignaciones_bs = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Total Asignaciones (Bs)")
-    total_deducciones_bs = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Total Deducciones (Bs)")
-    sueldo_neto_bs = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Sueldo Neto (Bs)")
-    
+    id_nomina = models.AutoField(primary_key=True)
+    id_empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
+    id_trabajo = models.ForeignKey(Labor, on_delete=models.CASCADE)
+    id_sueldo = models.ForeignKey(Sueldo, on_delete=models.CASCADE)
+    periodo_inicio = models.DateField(verbose_name="Fecha de Inicio del Período")
+    periodo_fin = models.DateField(verbose_name="Fecha de Fin del Período")
+    tipo_periodo = models.CharField(max_length=10, choices=TIPO_PERIODO_CHOICES, default='semanal')
+    sueldo_bs_base = models.DecimalField(max_digits=15, decimal_places=2)
+    cestaticket_bs = models.DecimalField(max_digits=15, decimal_places=2)
+    horas_extras = models.IntegerField(default=0)
+    horas_ordinarias = models.DecimalField(max_digits=5, decimal_places=2)
+    pago_horas_extras_bs = models.DecimalField(max_digits=15, decimal_places=2)
+    horas_festivas = models.IntegerField(default=0)
+    pago_horas_festivas_bs = models.DecimalField(max_digits=15, decimal_places=2)
+    dias_vacaciones = models.IntegerField(default=0)
+    dias_enfermedad = models.IntegerField(default=0)
+    total_asignaciones_bs = models.DecimalField(max_digits=15, decimal_places=2)
+    ivss_bs = models.DecimalField(max_digits=15, decimal_places=2)
+    rpe_bs = models.DecimalField(max_digits=15, decimal_places=2)
+    faov_bs = models.DecimalField(max_digits=15, decimal_places=2)
+    pago_inasistencias_bs = models.DecimalField(max_digits=15, decimal_places=2, default=0.00) 
+    pago_prestamo_bs = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), verbose_name="Deducción Préstamo (Bs)")
+    total_deducciones_bs = models.DecimalField(max_digits=15, decimal_places=2)
+    sueldo_neto_bs = models.DecimalField(max_digits=15, decimal_places=2)
+    fecha_emision = models.DateField(auto_now_add=True) 
+
+    def __str__(self):
+        return f"Nómina {self.id_nomina} - {self.id_empleado.nombre} {self.periodo_inicio} a {self.periodo_fin}" 
 
 
 class Asistencia(models.Model):
@@ -257,27 +147,6 @@ class Asistencia(models.Model):
         verbose_name_plural = "Asistencias"
         unique_together = ('id_empleado', 'fecha_asistencia')
     
-    def clean(self):
-        """
-        Valida que la fecha de asistencia no sea anterior a la fecha de contratación.
-        """
-        if self.id_empleado and self.fecha_asistencia:
-            
-            fecha_contratacion = self.id_empleado.fecha_contratacion 
-            
-            if self.fecha_asistencia < fecha_contratacion:
-                raise ValidationError({
-                    'fecha_asistencia': (
-                        f"La fecha de inasistencia ({self.fecha_asistencia.strftime('%d/%m/%Y')}) "
-                        f"no puede ser anterior a la fecha de contratación del empleado "
-                        f"({fecha_contratacion.strftime('%d/%m/%Y')})."
-                    )
-                })
-
-    def save(self, *args, **kwargs):
-     
-        self.full_clean() 
-        super().save(*args, **kwargs)
     def __str__(self):
         return f"{self.id_empleado.nombre} - {self.fecha_asistencia} - {'Sí' if self.asistio else 'No'}"
     
@@ -382,7 +251,8 @@ class Prestamo(models.Model):
     fecha_solicitud = models.DateField(auto_now_add=True, verbose_name="Fecha de Solicitud")
     aprobado = models.BooleanField(default=False, verbose_name="Aprobado")
     fecha_aprobacion = models.DateField(null=True, blank=True, verbose_name="Fecha de Aprobación")
-    activo = models.BooleanField(default=True, verbose_name="Activo") 
+    activo = models.BooleanField(default=True, verbose_name="Activo") # Para saber si el préstamo aún tiene pagos pendientes
+
     def save(self, *args, **kwargs):
         if not self.pk: 
             self.monto_pendiente_bs = self.monto_total_bs
@@ -396,148 +266,77 @@ class Prestamo(models.Model):
         verbose_name_plural = "Préstamos"
         ordering = ['-fecha_solicitud']
 
-TIPO_CONCEPTO_CHOICES = [
-    ('ASIGNACION', 'Asignación'),
-    ('DEDUCCION', 'Deducción'),
-]
+class ConceptoNomina(models.Model):
+    TIPO = (('ASIGNACION', 'Asignación'), ('DEDUCCION', 'Deducción'))
+    codigo = models.CharField(max_length=20, unique=True)
+    nombre = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=12, choices=TIPO)
+    es_por_dias = models.BooleanField(default=False, help_text="Ej: Salario base")
+    es_cuota_fija = models.BooleanField(default=False, help_text="Ej: Cestaticket")
+    valor_fijo = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    formula = models.TextField(blank=True, help_text="Ej: salario * 0.04 (IVSS)")
 
-PERIODICIDAD_CHOICES = [
-    ('SEMANAL', 'Semanal'),
-    ('QUINCENAL', 'Quincenal'),
-    ('MENSUAL', 'Mensual'),
-    ('TRIMESTRAL', 'Trimestral'),
-    ('ANUAL', 'Anual'),
-    ('UNICA', 'Única (por evento)'),
-]
-
-class ParametrosNomina(models.Model):
-    id_parametro = models.AutoField(primary_key=True) 
-    
-    nombre = models.CharField(max_length=150, unique=True, verbose_name="Nombre del Concepto/Regla")
-    
-    tipo = models.CharField(
-        max_length=10,
-        choices=TIPO_CONCEPTO_CHOICES,
-        default='ASIGNACION',
-        verbose_name="Tipo de Concepto"
-    )
-    
-    periodicidad = models.CharField(
-        max_length=10,
-        choices=PERIODICIDAD_CHOICES,
-        default='MENSUAL',
-        verbose_name="Periodicidad de Aplicación"
-    )
-    
-    monto_fijo = models.DecimalField(
-        max_digits=10, decimal_places=2, default=Decimal('0.00'), 
-        blank=True, null=True, verbose_name="Monto Fijo (Bs) / Valor UT"
-    )
-
-    monto_fijo_usd = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, blank=True, null=True,
-    help_text="Monto en USD (ej: cestaticket 40 USD)")
-    
-    porcentaje = models.DecimalField(
-        max_digits=5, decimal_places=4, default=Decimal('0.0000'), 
-        blank=True, null=True, verbose_name="Porcentaje (Ej: Tasa IVSS)"
-    )
-    
-    es_concepto_fijo = models.BooleanField(
-        default=False, 
-        verbose_name="Es Tasa/Factor Fijo Global (IVSS, UT, Cesta)"
-    )
-    
-    fecha_ultima_actualizacion = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
+    def __str__(self):
+        return f"{self.codigo} - {self.nombre}"
 
 
+class NominaNueva(models.Model):
+    ESTADO = (('PN', 'Prenómina'), ('CC', 'Nómina Cerrada'))
+    empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
+    sueldo = models.ForeignKey(Sueldo, on_delete=models.PROTECT)
+    periodo_inicio = models.DateField()
+    periodo_fin = models.DateField()
+    estado = models.CharField(max_length=2, choices=ESTADO, default='PN')
+    fecha_generacion = models.DateField(auto_now_add=True)
+
+    def dias_trabajados(self):
+        return (self.periodo_fin - self.periodo_inicio).days + 1
+
+    def salario_diario(self):
+        return self.sueldo.sueldo_bs / Decimal('30')
+
+    def total_asignaciones(self):
+        return sum(i.monto for i in self.items.filter(concepto__tipo='ASIGNACION'))
+
+    def total_deducciones(self):
+        return sum(i.monto for i in self.items.filter(concepto__tipo='DEDUCCION'))
+
+    def neto(self):
+        return self.total_asignaciones() - self.total_deducciones()
+
+    def __str__(self):
+        return f"{self.get_estado_display()} - {self.empleado} ({self.periodo_inicio})"
 
 
-    class Meta:
-        verbose_name = "Concepto/Regla de Nómina"
-        verbose_name_plural = "Conceptos/Reglas de Nómina"
-    
+class ItemNomina(models.Model):
+    nomina = models.ForeignKey(NominaNueva, related_name='items', on_delete=models.CASCADE)
+    concepto = models.ForeignKey(ConceptoNomina, on_delete=models.PROTECT)
+    cantidad = models.DecimalField(max_digits=8, decimal_places=2, default=1)
+    unidad = models.CharField(max_length=20, default='DÍAS')
+    monto = models.DecimalField(max_digits=15, decimal_places=2, editable=False)
 
+    def save(self, *args, **kwargs):
+        self.monto = self.calcular()
+        super().save(*args, **kwargs)
 
-    def valor_en_bs(self):
-        """
-        Devuelve el monto en bolívares según prioridad:
-        1. Si tiene monto_fijo_usd → convierte con la última tasa BCV
-        2. Si no → usa monto_fijo directamente
-        """
-        if self.monto_fijo_usd and self.monto_fijo_usd > 0:
+    def calcular(self):
+        salario = self.nomina.sueldo.sueldo_bs
+        dias = self.nomina.dias_trabajados()
+
+        if self.concepto.es_cuota_fija and self.concepto.valor_fijo:
+            return self.concepto.valor_fijo
+
+        if self.concepto.es_por_dias:
+            valor_diario = salario / Decimal('30')
+            return round(valor_diario * self.cantidad, 2)
+
+        if self.concepto.formula:
+            local = {'salario': salario, 'dias': dias, 'cantidad': self.cantidad}
             try:
-                ultima_tasa = Tasa.objects.latest('fecha')
-                return self.monto_fijo_usd * ultima_tasa.valor_tasa
-            except Tasa.DoesNotExist:
+                return round(eval(self.concepto.formula, {"__builtins__": {}}, local), 2)
+            except:
                 return Decimal('0.00')
-        return self.monto_fijo
-        
-    def __str__(self):
-        return f"{self.nombre} ({self.get_tipo_display()})"
-
-
-class SueldoLabor(models.Model):
-    id_labor = models.OneToOneField('Labor', on_delete=models.CASCADE, primary_key=True, verbose_name="Labor (Cargo)")
-    
-    sueldo_base_semanal_usd = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2, 
-        default=Decimal('0.00'),
-        verbose_name="Sueldo Base Semanal (USD)"
-    ) 
-    
-    fecha_establecimiento = models.DateField(auto_now_add=True)
+        return Decimal('0.00')
 
     def __str__(self):
-        return f"Sueldo Base para {self.id_labor.nombre_trabajo}: ${self.sueldo_base_semanal_usd}"
-
-    class Meta:
-        verbose_name = "Sueldo por Labor"
-        verbose_name_plural = "Sueldos por Labor"
-
-
-class CambioLabor(models.Model):
-    id_cambio = models.AutoField(primary_key=True)
-    
-    id_empleado = models.ForeignKey('Empleado', on_delete=models.CASCADE, related_name='cambios_labor')
-    
-    labor_anterior = models.ForeignKey('Labor', on_delete=models.SET_NULL, null=True, related_name='labor_previa')
-    
-    labor_nueva = models.ForeignKey('Labor', on_delete=models.SET_NULL, null=True, related_name='labor_actual')
-    
-    fecha_cambio = models.DateTimeField(default=timezone.now, verbose_name="Fecha y Hora del Cambio")
-    motivo = models.CharField(max_length=255, blank=True, null=True, verbose_name="Motivo o Razón del Cambio")
-    
-    class Meta:
-        verbose_name = "Registro de Cambio de Labor"
-        verbose_name_plural = "Historial de Cambios de Labor"
-        ordering = ['-fecha_cambio']
-
-    def __str__(self):
-        return f"{self.id_empleado.nombre} cambió de {self.labor_anterior.nombre_trabajo if self.labor_anterior else 'N/A'} a {self.labor_nueva.nombre_trabajo} el {self.fecha_cambio.date()}"
-    
-
-class BonoExtra(models.Model):
-    id_bono = models.AutoField(primary_key=True)
-    
-    id_empleado = models.ForeignKey('Empleado', on_delete=models.CASCADE, related_name='bonos_recibidos')
-    
-    concepto = models.CharField(max_length=150, verbose_name="Concepto del Bono")
-    
-    monto_bs = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Monto (Bs)")
-    
-    fecha_aplicacion = models.DateField(verbose_name="Fecha de Aplicación")
-    
-    pagado_en_nomina = models.BooleanField(default=False, verbose_name="Pagado en Nómina")
-    
-    fecha_registro = models.DateTimeField(default=timezone.now)
-
-    
-
-    class Meta:
-        verbose_name = "Asignación/Bono Extra"
-        verbose_name_plural = "Asignaciones/Bonos Extras"
-        ordering = ['-fecha_aplicacion']
-
-    def __str__(self):
-        return f"Bono de Bs {self.monto_bs} para {self.id_empleado.nombre} ({self.concepto})"
+        return f"{self.concepto} → {self.monto}"

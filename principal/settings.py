@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'principal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Depaback',
+        'NAME': 'conceptonominas',
         'USER': 'postgres',
         'PASSWORD': 'admin',
         'HOST': 'localhost',

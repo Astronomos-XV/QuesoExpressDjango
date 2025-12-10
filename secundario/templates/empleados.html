@@ -6,16 +6,15 @@
 {% block content %}
 <h1 class="titulo-principal">Listado de Empleados</h1>
 
-<div>
+<div class="table-listing-container">
     <div class="table-responsive ">
         <table>
             <thead class="nomina-table thead">
                 <tr>
-                    <!--<th>ID</th>-->
+                    <th>ID</th>
                     <th>Cédula</th>
                     <th>Nombre</th>
                     <th>Apellido</th>
-                    <th>Activo</th>
                     <th>Teléfono</th>
                     <th>Correo</th>
                     <th>Fecha de Contratación</th>
@@ -29,11 +28,10 @@
             <tbody class="nomina-table tbody">
                 {% for empleado in empleados %}
                 <tr>
-                    <!--<td data-label=" ID">{{ empleado.id_empleado }}</td>-->
+                    <td data-label=" ID">{{ empleado.id_empleado }}</td>
                     <td data-label="Cédula">{{ empleado.cedula }}</td>
                     <td data-label="Nombre">{{ empleado.nombre }}</td>
                     <td data-label="Apellido">{{ empleado.apellido }}</td>
-                    <td data-label="Activo">{{ empleado.activo }}</td>
                     <td data-label="Teléfono">{{ empleado.telefono }}</td>
                     <td data-label="Correo">{{ empleado.correo }}</td>
                     <td data-label="Fecha Contratación">{{ empleado.fecha_contratacion|date:"d/m/Y" }}</td>
@@ -44,8 +42,8 @@
                     <td data-label="Acciones" class="button-group-actions">
                         <a class="btn btn-warning" href="{% url 'editar_empleado' empleado.id_empleado %}">
                             Editar</a>
-                        <!--<a class="btn btn-danger" href="{% url 'eliminar_empleado' empleado.id_empleado %}"> 
-                            Eliminar</a>--> 
+                        <a class="btn btn-danger" href="{% url 'eliminar_empleado' empleado.id_empleado %}">
+                            Eliminar</a>
                     </td>
                 </tr>
                 {% empty %}

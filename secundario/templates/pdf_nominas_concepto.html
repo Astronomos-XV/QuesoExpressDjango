@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: Arial;
+            font-size: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        .total {
+            font-weight: bold;
+            background: #f0f0f0;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h2>{{ instituto.nombre }}<br><small>{{ instituto.sigla }}</small></h2>
+        <p>RIF: {{ instituto.rif }}</p>
+    </div>
+
+    <table style="font-size:9px; margin-bottom:10px;">
+        <tr>
+            <td><b>Nro:</b> {{ nomina.id|stringformat:"06d" }}2025</td>
+            <td><b>Desde:</b> {{ nomina.periodo_inicio }}</td>
+            <td><b>Hasta:</b> {{ nomina.periodo_fin }}</td>
+        </tr>
+        <tr>
+            <td><b>Cédula:</b> {{ nomina.empleado.cedula }}</td>
+            <td><b>Ingreso:</b> {{ nomina.empleado.fecha_contratacion }}</td>
+            <td><b>Salario:</b> {{ nomina.sueldo.sueldo_bs|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <td colspan="3"><b>Nombre:</b> {{ nomina.empleado.nombre }} {{ nomina.empleado.apellido }}</td>
+        </tr>
+    </table>
+
+    <h3 style="text-align:center;">{{ nomina.get_estado_display }}</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Concepto</th>
+                <th>Cant.</th>
+                <th>Unid.</th>
+                <th>Asignaciones</th>
+                <th>Deducciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in nomina.items.all %}
+            <tr>
+                <td class="text-left">{{ item.concepto.nombre }} ({{ item.concepto.codigo }})</td>
+                <td>{{ item.cantidad }}</td>
+                <td>{{ item.unidad }}</td>
+                <td>{% if item.concepto.tipo == 'ASIGNACION' %}{{ item.monto|floatformat:2 }}{% endif %}</td>
+                <td>{% if item.concepto.tipo == 'DEDUCCION' %}{{ item.monto|floatformat:2 }}{% endif %}</td>
+            </tr>
+            {% endfor %}
+            <tr class="total">
+                <td colspan="3">TOTALES</td>
+                <td>{{ nomina.total_asignaciones|floatformat:2 }}</td>
+                <td>{{ nomina.total_deducciones|floatformat:2 }}</td>
+            </tr>
+            <tr class="total">
+                <td colspan="4" class="text-left">NETO A COBRAR</td>
+                <td>{{ nomina.neto|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p style="text-align:right; font-size:9px; margin-top:20px;">
+        Generado: {{ hoy }} | Estado: {{ nomina.get_estado_display }}
+    </p>
+
+</body>
+
+</html>
