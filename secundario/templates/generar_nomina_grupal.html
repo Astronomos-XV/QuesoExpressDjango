@@ -1,11 +1,25 @@
-{% extends 'home.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block content %}
-<div class="container">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+</head>
 
-    <h2>Generar Nómina Grupal</h2>
+<body>
+    {% block content %}
+    <div class="header"> {% include 'includes/navbar.html' %}</div>
+    <div class="container">
 
-    <div class="card">
+        <h2>Generar Nómina Grupal</h2>
+
+
         <form method="post" class="clean-form">
             {% csrf_token %}
             {{ form.as_p }}
@@ -13,7 +27,10 @@
                 <button type="submit" class="btn btn-primary">Generar Nóminas</button>
             </div>
         </form>
-    </div>
-</div>
 
-{% endblock %}
+    </div>
+
+    {% endblock %}
+</body>
+
+</html>

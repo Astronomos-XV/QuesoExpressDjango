@@ -93,6 +93,16 @@
     cursor: not-allowed;
 }
 
+.card .btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.card .btn-danger:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+
 .card .button-group {
     margin-top: 20px;
     display: flex;

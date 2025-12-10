@@ -1,0 +1,48 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="header"> {% include 'includes/navbar.html' %}</div>
+    {% block content %}
+    <div class="container">
+        <h2>{{ titulo }}</h2>
+
+        <div class="table-responsive ">
+            <p>¿Estás seguro de que deseas eliminar el siguiente préstamo?</p>
+
+
+            <strong>Empleado:</strong> {{ prestamo.id_empleado.nombre }} {{ prestamo.id_empleado.apellido }}
+
+            <strong>Monto Total: </strong>{{ prestamo.monto_total_bs|floatformat:2 }} Bs</li>
+            <strong>Monto Pendiente:</strong> {{ prestamo.monto_pendiente_bs|floatformat:2 }} Bs</li>
+            <strong>Fecha de Solicitud:</strong> {{ prestamo.fecha_solicitud|date:"d/m/Y" }}</li>
+
+
+            <p>Esta acción no se puede deshacer.</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-danger mt-3">Sí, Eliminar</button>
+                <a href="{% url 'listar_prestamos' %}" class="btn btn-warning">Cancelar</a>
+            </div>
+        </form>
+    </div>
+    {% endblock %}
+</body>
+
+</html>

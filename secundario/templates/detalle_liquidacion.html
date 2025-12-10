@@ -1,0 +1,59 @@
+{% extends 'home.html' %}
+
+{% block title %}Detalle de Liquidación{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Detalle de Liquidación</h3>
+        </div>
+        <div class="card-body">
+            <h4 class="card-title">{{ liquidacion.id_empleado.nombre }} {{ liquidacion.id_empleado.apellido }}</h4>
+            <hr>
+            <dl class="row">
+                <dt class="col-sm-4">ID Empleado:</dt>
+                <dd class="col-sm-8">{{ liquidacion.id_empleado.cedula }}</dd>
+
+                <dt class="col-sm-4">Labor:</dt>
+                <dd class="col-sm-8">{{ liquidacion.id_empleado.id_trabajo.nombre_trabajo }}</dd>
+
+                <dt class="col-sm-4">Fecha de Liquidación:</dt>
+                <dd class="col-sm-8">{{ liquidacion.fecha_liquidacion|date:"d/m/Y" }}</dd>
+
+                <dt class="col-sm-4">Tipo de Liquidación:</dt>
+                <dd class="col-sm-8">{{ liquidacion.get_tipo_liquidacion_display }}</dd>
+
+                {% if liquidacion.motivo %}
+                <dt class="col-sm-4">Motivo:</dt>
+                <dd class="col-sm-8">{{ liquidacion.motivo }}</dd>
+                {% endif %}
+
+                <dt class="col-sm-4">Días Vacaciones Pendientes:</dt>
+                <dd class="col-sm-8">{{ liquidacion.dias_vacaciones_pendientes|floatformat:2 }}</dd>
+
+                <dt class="col-sm-4">Monto Vacaciones (BS):</dt>
+                <dd class="col-sm-8">{{ liquidacion.monto_vacaciones_bs|floatformat:2 }}</dd>
+
+                <dt class="col-sm-4">Monto Antigüedad (BS):</dt>
+                <dd class="col-sm-8">{{ liquidacion.monto_antiguedad_bs|floatformat:2 }}</dd>
+
+                <dt class="col-sm-4">Monto Utilidades (BS):</dt>
+                <dd class="col-sm-8">{{ liquidacion.monto_utilidades_bs|floatformat:2 }}</dd>
+
+                <dt class="col-sm-4">Otros Pagos (BS):</dt>
+                <dd class="col-sm-8">{{ liquidacion.otros_pagos_bs|floatformat:2 }}</dd>
+
+                <dt class="col-sm-4"><strong>Total Liquidación (BS):</strong></dt>
+                <dd class="col-sm-8"><strong>{{ liquidacion.total_liquidacion_bs|floatformat:2 }}</strong></dd>
+            </dl>
+            <hr>
+            <div class="d-flex justify-content-start">
+                <a href="{% url 'editar_liquidacion' liquidacion.pk %}" class="btn btn-warning me-2">Editar</a>
+                <a href="{% url 'eliminar_liquidacion' liquidacion.pk %}" class="btn btn-danger me-2">Eliminar</a>
+                <a href="{% url 'listar_liquidaciones' %}" class="btn btn-secondary">Volver al Listado</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

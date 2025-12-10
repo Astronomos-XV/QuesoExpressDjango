@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar Nómina por Departamento</title>
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+
+    <style>
+        .departamento-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #fafafa;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-item {
+            display: block;
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+            accent-color: #0d6efd;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        .info-box {
+            background-color: #e8f4fc;
+            border-left: 5px solid #3498db;
+            padding: 12px 15px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .departamento-list {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% block content %}
+    <div class="header">
+        {% include 'includes/navbar.html' %}
+    </div>
+
+    <div class="container">
+
+        <h2 class="form-title">Generar Nómina por Departamento</h2>
+
+
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="clean-form">
+            {% csrf_token %}
+
+            <!-- Fecha de inicio (lunes de la semana) -->
+            <div class="form-group">
+                <label for="{{ form.fecha_inicio.id_for_label }}" class="form-label">
+                    {{ form.fecha_inicio.label }}
+                </label>
+                {{ form.fecha_inicio }}
+                {% if form.fecha_inicio.help_text %}
+                    <small class="text-muted">{{ form.fecha_inicio.help_text }}</small>
+                {% endif %}
+                {% if form.fecha_inicio.errors %}
+                    <div class="text-danger small mt-1">{{ form.fecha_inicio.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Selección de departamentos con checkboxes -->
+            <div class="form-group">
+                <label class="form-label">
+                    {{ form.departamentos.label }}
+                    <span class="text-danger"></span>
+                </label>
+
+                <div class="departamento-list">
+                    {% for checkbox in form.departamentos %}
+                        <label class="checkbox-item">
+                            {{ checkbox.tag }}
+                            {{ checkbox.choice_label }}
+                        </label>
+                    {% empty %}
+                        <p class="text-muted">No hay departamentos registrados o activos.</p>
+                    {% endfor %}
+                </div>
+
+                {% if form.departamentos.errors %}
+                    <div class="text-danger small mt-2">{{ form.departamentos.errors }}</div>
+                {% endif %}
+
+                <small class="text-muted">
+                    Puedes seleccionar uno o varios departamentos. Se procesarán todos los empleados activos.
+                </small>
+            </div>
+
+            <div class="button-group mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    Generar Nóminas
+                </button>
+
+                </a>
+            </div>
+        </form>
+
+    </div>
+    {% endblock %}
+
+</body>
+
+</html>

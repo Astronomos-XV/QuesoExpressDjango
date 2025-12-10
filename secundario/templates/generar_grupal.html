@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h4>Generar Nómina Grupal</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">{{ form.labor.label }}</label>
+                    {{ form.labor }}
+                    <small class="text-muted">{{ form.labor.help_text }}</small>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">{{ form.fecha_inicio.label }}</label>
+                    {{ form.fecha_inicio }}
+                    <small class="text-muted">{{ form.fecha_inicio.help_text }}</small>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-success">Generar Nóminas</button>
+                    <a href="{% url 'home' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% include "includes/messages.html" %}
+</div>
+{% endblock %}

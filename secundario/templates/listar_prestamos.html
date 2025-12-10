@@ -1,0 +1,112 @@
+{% extends 'home.html' %} {# Asume que tienes un template base.html #}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<h2>{{ titulo }}</h2>
+<div class="button-group">
+    <div>
+
+        <a href="{% url 'crear_prestamo' %}" class="btn btn-success">
+            Otorgar Nuevo Préstamo
+            <a href="{% url 'eliminar_todos_los_prestamos' %}" class="btn btn-danger">
+                Eliminar todos Prestamos
+            </a>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+
+    {% endfor %}
+    {% endif %}
+
+    {% if prestamos %}
+    <div class="table-listing-container">
+        <table class="table-responsive">
+            <thead class="nomina-table thead">
+                <tr>
+                    <th>ID Préstamo</th>
+                    <th>Empleado</th>
+                    <th>Monto Total (Bs)</th>
+                    <th>Monto Cuota (Bs)</th>
+                    <th>Cuotas Restantes</th>
+                    <th>Monto Pendiente (Bs)</th>
+                    <th>Fecha Solicitud</th>
+                    <th>Aprobado</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="nomina-table tbody">
+                {% for prestamo in prestamos %}
+                <tr>
+                    <td>{{ prestamo.id_prestamo }}</td>
+                    <td>{{ prestamo.id_empleado.nombre }} {{ prestamo.id_empleado.apellido }}</td>
+                    <td>{{ prestamo.monto_total_bs|floatformat:2 }}</td>
+                    <td>{{ prestamo.monto_cuota_bs|floatformat:2 }}</td>
+                    <td>{{ prestamo.cuotas_restantes }}</td>
+                    <td>{{ prestamo.monto_pendiente_bs|floatformat:2 }}</td>
+                    <td>{{ prestamo.fecha_solicitud|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if prestamo.aprobado %}
+                        <span class="badge bg-success">Sí</span>
+                        {% else %}
+                        <span class="badge bg-danger">No</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if prestamo.activo %}
+                        <span class="badge bg-primary">Sí</span>
+                        {% else %}
+                        <span class="badge bg-secondary">No</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {# Aquí puedes añadir enlaces para ver detalles, editar o anular un préstamo #}
+                        <a href="{% url 'eliminar_prestamo' prestamo.pk %}" class="btn btn-danger">Eliminar</a>
+                        <a href="{% url 'editar_prestamo' prestamo.pk %}" class="btn btn-warning ">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {# Controles de Paginación #}
+
+
+    {% if prestamos.has_previous %}
+    <div class="button-group">
+
+        <a class="btn" href="?page=1">&laquo; Primera</a>
+
+
+        <a class="btn" href="?page={{ prestamos.previous_page_number }}">Anterior</a>
+
+        {% else %}
+
+        {% endif %}
+
+        <button class="btn btn-info">
+            Página {{ prestamos.number }} de {{ prestamos.paginator.num_pages }}
+        </button>
+
+        {% if prestamos.has_next %}
+
+        <a class="btn" href="?page={{ prestamos.next_page_number }}">Siguiente</a>
+
+
+        <a class="btn" href="?page={{ prestamos.paginator.num_pages }}">Última &raquo;</a>
+
+        {% else %}
+
+        {% endif %}
+
+    </div>
+
+    {% else %}
+
+    {% endif %}
+</div>
+</div>
+{% endblock %}
