@@ -21,20 +21,17 @@
                 <h1>Listado de Sueldos</h1>
                 <div class="button-group">
 
-                    <a class="btn" href="{% url 'sueldo_creacion' %}"
-                        style="background-color: #28a745; color: white;">Agregar
-                        Sueldo</a>
+                
                     <a class="btn btn-primary" href="{% url 'generar_sueldo_grupal' %}">Agregar sueldo por grupo</a>
                 </div>
                 <div class="table-responsive">
                     <table class="nomina-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                              <!--  <th>ID</th> -->
                                 <th>Empleado</th>
                                 <th>Sueldo (Bs)</th>
                                 <th>Tasa (Bs/USD)</th>
-                                <th>Jornada</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -42,11 +39,10 @@
                             {% if sueldos %}
                             {% for sueldo in sueldos %}
                             <tr>
-                                <td>{{ sueldo.id_sueldo }}</td>
+                             <!--   <td>{{ sueldo.id_sueldo }}</td>-->
                                 <td>{{ sueldo.id_empleado.nombre }} {{ sueldo.id_empleado.apellido }}</td>
                                 <td>{{ sueldo.sueldo_bs|floatformat:2 }}</td>
                                 <td>{{ sueldo.id_tasa.valor_tasa|floatformat:2 }}</td>
-                                <td>{{ sueldo.id_jornada.nombre_jornada }} ({{ sueldo.id_jornada.horas_semanales }}h)
                                 </td>
                                 <td>
                                     <a href="{% url 'sueldo_editar' sueldo.id_sueldo %}"

@@ -14,10 +14,20 @@
     <div class="container">
         <form method="post">
             <h2>Inicio de Sesión</h2>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}" {% endif %} {% if forloop.last %}
+                    class="mensaje-mas-reciente" {% endif %}>
+                    {{ message }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Iniciar Sesión</button>
-            <a href="{% url 'crear_superuser' %}" class="btn">Registrar un Nuevo Usuario</a>
+
 
         </form>
     </div>

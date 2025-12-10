@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+
+</head>
+
+<body>
+    <div class="header"> {% include 'includes/navbar.html' %}</div>
+    <main>{% block content %} {% endblock %}</main>
+    <div class="table-listing-container">
+
+        <h2 class="table-title">Lista de Liquidaciones</h2>
+        <div class="button-group">
+            <a href="{% url 'crear_liquidacion_individual' %}" class="btn btn-success">Crear Liquidación Individual</a>
+            <a href="{% url 'crear_liquidacion_grupal' %}" class="btn btn-info">Crear Liquidación Grupal</a>
+
+            {# Nuevo botón para eliminar todas las liquidaciones #}
+            <form action="{% url 'eliminar_todas_liquidaciones' %}" method="post"
+                style="display: inline-block; margin-left: 10px;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger"
+                    onclick="return confirm('¿Estás seguro de que quieres eliminar TODAS las liquidaciones? Esta acción es IRREVERSIBLE.');">
+                    Eliminar Todas las Liquidaciones
+                </button>
+            </form>
+        </div>
+        {% if liquidaciones %}
+        <table class="table-responsive nomina-table">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Cédula</th>
+                    <th>Fecha de Fin de Relación</th>
+                    <th>Motivo</th>
+                    <th>Total Liquidación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for liquidacion in liquidaciones %}
+                <tr>
+                    <td>{{ liquidacion.empleado.nombre }} {{ liquidacion.empleado.apellido }}</td>
+                    <td>{{ liquidacion.empleado.cedula }}</td>
+                    <td>{{ liquidacion.fecha_fin_relacion|date:"d/m/Y" }}</td>
+                    <td>{{ liquidacion.get_motivo_terminacion_display }}</td>
+                    <td>Bs. {{ liquidacion.total_liquidacion|floatformat:2 }}</td>
+                    <td>
+                        <a href="{% url 'ver_liquidacion_pdf' liquidacion.pk %}" class="btn btn-sm btn-outline-danger"
+                            target="_blank">PDF</a>
+                        {# Puedes añadir botones para editar o eliminar si es necesario, con sus respectivas vistas #}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {# Paginación #}
+        <div class="button-group">
+            {# Corregido el HTML de paginación para usar elementos 'li' y 'a' correctamente #}
+            <ul class="pagination justify-content-center">
+                {% if liquidaciones.has_previous %}
+                <a class="btn" href="?page={{ liquidaciones.previous_page_number }}">Anterior</a>
+                {% endif %}
+
+                {% for num in liquidaciones.paginator.page_range %}
+                {% if liquidaciones.number == num %}
+                <a class="btn">{{ num }}</a>
+                {% else %}
+                <a class="btn" href="?page={{ num }}">
+                    {{ num }}
+                </a>
+
+                {% endif %}
+                {% endfor %}
+
+                {% if liquidaciones.has_next %}
+                <a class="btn" href="?page={{ liquidaciones.next_page_number }}">Siguiente</a>
+
+                {% endif %}
+            </ul>
+        </div>
+        {% else %}
+        <p>No hay liquidaciones registradas.</p>
+        {% endif %}
+    </div>
+
+</body>
+
+</html>

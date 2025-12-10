@@ -1,115 +1,103 @@
+{% extends 'home.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de Empleados</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
-    <link rel="stylesheet" href="{% static 'css/empleados.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-</head>
+{% block title %}Listado de Empleados{% endblock %}
 
-<body>
+{% block content %}
+<h1 class="titulo-principal">Listado de Empleados</h1>
 
+<div>
+    <div class="table-responsive ">
+        <table>
+            <thead class="nomina-table thead">
+                <tr>
+                    <!--<th>ID</th>-->
+                    <th>Cédula</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Activo</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Fecha de Contratación</th>
+                    <th>Departamento</th>
+                    <th>Profesión</th>
+                    <th>Labor</th>
+                    <th>Jornada</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="nomina-table tbody">
+                {% for empleado in empleados %}
+                <tr>
+                    <!--<td data-label=" ID">{{ empleado.id_empleado }}</td>-->
+                    <td data-label="Cédula">{{ empleado.cedula }}</td>
+                    <td data-label="Nombre">{{ empleado.nombre }}</td>
+                    <td data-label="Apellido">{{ empleado.apellido }}</td>
+                    <td data-label="Activo">{{ empleado.activo }}</td>
+                    <td data-label="Teléfono">{{ empleado.telefono }}</td>
+                    <td data-label="Correo">{{ empleado.correo }}</td>
+                    <td data-label="Fecha Contratación">{{ empleado.fecha_contratacion|date:"d/m/Y" }}</td>
+                    <td data-label="Departamento">{{ empleado.id_depa.nombre_depa }}</td>
+                    <td data-label="Profesión">{{ empleado.id_pro.nombre_pro }}</td>
+                    <td data-label="Labor">{{ empleado.id_trabajo.nombre_trabajo }}</td>
+                    <td data-label="Jornada">{{ empleado.id_jornada.nombre_jornada }}</td>
+                    <td data-label="Acciones" class="button-group-actions">
+                        <a class="btn btn-warning" href="{% url 'editar_empleado' empleado.id_empleado %}">
+                            Editar</a>
+                        <!--<a class="btn btn-danger" href="{% url 'eliminar_empleado' empleado.id_empleado %}"> 
+                            Eliminar</a>--> 
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="12">No se encontraron empleados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
+    {# Bloque de Paginación #}
+    {% if empleados.has_other_pages %}
+    <div class="button-group"> {# Utiliza la clase button-group para estilizar los botones de paginación #}
+        {# Enlace a la primera página #}
+        {% if empleados.has_previous %}
+        <a class="btn"
+            href="?page=1{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo;
+            Primera</a>
+        {% endif %}
 
-    <section class="layout">
-        <div class="header"> {% include 'includes/navbar.html' %}</div>
-        <div class="main">
-            <main>
-                {% block content %}{% endblock %}
-            </main>
+        {# Enlace a la página anterior #}
+        {% if empleados.has_previous %}
+        <a class="btn"
+            href="?page={{ empleados.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Anterior</a>
+        {% endif %}
 
-            <div class="container">
-                <div class="table-responsive">
-                    <table>
-                        <tr>
-                            <th>ID</th>
-                            <th>Cedula</th>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
-                            <th>Telefono</th>
-                            <th>Correo</th>
-                            <th>Fecha de Contratación</th>
-                            <th>Departamento</th>
-                            <th>Profesión</th>
-                            <th>Labor</th>
-                            <th>Jornada</th>
-                            <th>Acciones</th>
-                        </tr>
-                        {% for empleado in empleados %}
-                        <tr>
-                            <td>{{ empleado.id_empleado }}</td>
-                            <td>{{ empleado.cedula }}</td>
-                            <td>{{ empleado.nombre }}</td>
-                            <td>{{ empleado.apellido }}</td>
-                            <td>{{ empleado.telefono }}</td>
-                            <td>{{ empleado.correo }}</td>
-                            <td>{{ empleado.fecha_contratacion }}</td>
+        {# Indicador de página actual #}
+        <span class="btn btn-info"> {# Aplica clases btn y btn-info para estilo #}
+            Página {{ empleados.number }} de {{ empleados.paginator.num_pages }}.
+        </span>
 
-                            <td>{{ empleado.id_depa.nombre_depa }}</td>
+        {# Enlace a la página siguiente #}
+        {% if empleados.has_next %}
+        <a class="btn"
+            href="?page={{ empleados.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Siguiente</a>
+        {% endif %}
 
-                            <td>{{ empleado.id_pro.nombre_pro }}</td>
-                            <td>{{ empleado.id_trabajo.nombre_trabajo }}</td>
-                            <td>{{ empleado.id_jornada.nombre_jornada }}</td>
-                            <td>
-                                <a class="btn btn-editar" href="{% url 'editar_empleado' empleado.id_empleado %}">
-                                    Editar</a>
-                                <a class="btn btn-eliminar" href="{% url 'eliminar_empleado' empleado.id_empleado %}">
-                                    Eliminar</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                </div>
+        {# Enlace a la última página #}
+        {% if empleados.has_next %}
+        <a class="btn"
+            href="?page={{ empleados.paginator.num_pages }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Última
+            &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {# Fin Bloque de Paginación #}
 
-                {# Bloque de Paginación INICIAR #}
-                {% if empleados.has_other_pages %} {# Este es más robusto, verifica si hay más de 1 página #}
-                <div class="button-group">
-                    <span class="step-links">
-                        {# Enlace a la primera página #}
-                        {% if empleados.has_previous %}
-                        <a class="btn" href="?page=1">&laquo; Primera</a>
-                        {% endif %}
-
-                        {# Enlace a la página anterior #}
-                        {% if empleados.has_previous %}
-                        <a class="btn" href="?page={{ empleados.previous_page_number }}">Anterior</a>
-                        {% endif %}
-
-                        <span class="btn btn-info">
-                            <strong>Página {{ empleados.number }} de {{ empleados.paginator.num_pages }}.</strong>
-                        </span>
-
-                        {# Enlace a la página siguiente #}
-                        {% if empleados.has_next %}
-                        <a class="btn" href="?page={{ empleados.next_page_number }}">Siguiente</a>
-                        {% endif %}
-
-                        {# Enlace a la última página #}
-                        {% if empleados.has_next %}
-                        <a class="btn" href="?page={{ empleados.paginator.num_pages }}">Última &raquo;</a>
-                        {% endif %}
-                    </span>
-                </div>
-                {% endif %}
-                {# Bloque de Paginación FIN #}
-
-                <a href="{% url 'crear_empleado' %}" class="btn btn-nuevo"><i class="fas fa-plus-circle"></i> Nuevo
-                    Empleado</a>
-                <a href="{% url 'home' %}" class="btn btn-home"> Inicio</a>
-            </div>
-            <script src="{% static 'js/navbar.js' %}"></script>
-
-            {# Estilos básicos para la paginación (puedes mover esto a tu CSS si lo prefieres) #}
-        </div>
-        <div class="footer">3</div>
-    </section>
-
-
-</body>
-
-</html>
+    <div class="button-group" style="margin-top: 20px;">
+        <a href="{% url 'crear_empleado' %}" class="btn"><i class="fas fa-plus-circle"></i> Nuevo
+            Empleado</a>
+        <!---<a href="{% url 'home' %}" class="btn btn-primary"> Inicio</a>-->
+    </div>
+</div>
+{% endblock %}

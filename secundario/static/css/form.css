@@ -4,14 +4,11 @@ body {
     margin: 0;
     padding: 0;
     text-align: center;
-
 }
-
 
 h1 {
     color: #008080;
 }
-
 
 .container {
     width: 100%;
@@ -21,14 +18,14 @@ h1 {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     padding: 30px;
     margin: 30px auto 40px;
-}
+    box-sizing: border-box;
 
+}
 
 form {
     display: flex;
     flex-direction: column;
     gap: 15px;
-
 }
 
 label {
@@ -51,7 +48,6 @@ select {
     box-sizing: border-box;
 }
 
-
 .botones {
     display: flex;
     justify-content: flex-end;
@@ -68,7 +64,6 @@ select {
     font-size: 16px;
     transition: all 0.3s;
     text-decoration: none;
-
     text-align: center;
 }
 
@@ -88,4 +83,69 @@ select {
 
 .cancelar:hover {
     background-color: #5a6268;
+}
+
+
+@media (max-width: 600px) {
+    .container {
+        margin: 15px;
+
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    label {
+        font-size: 0.9em;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    select {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    .botones {
+        flex-direction: column;
+
+        gap: 10px;
+        align-items: center;
+
+    }
+
+    .guardar,
+    .cancelar {
+        width: 100%;
+
+        padding: 12px;
+        font-size: 1em;
+        margin: 0;
+
+    }
+}
+
+@media (max-width: 400px) {
+    .container {
+        padding: 15px;
+        margin: 10px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    label {
+        font-size: 0.85em;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    select {
+        font-size: 0.85em;
+    }
 }

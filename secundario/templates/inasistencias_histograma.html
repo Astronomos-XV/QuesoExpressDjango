@@ -1,0 +1,22 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block title %}Histograma de Inasistencias (Imagen){% endblock %}
+
+{% block content %}
+
+
+
+<img src="{% url 'inasistencias_histograma_imagen' %}" alt="Histograma de Inasistencias" class="img-fluid"
+    style="max-width: 100%;">
+
+
+<div class="text-center">
+    <a href="{% url 'inasistencia_list' %}" class="btn ">Volver a Listado de Inasistencias</a>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock %}

@@ -15,9 +15,28 @@
 
 <body>
 
+
+
     <section class="layout">
         <div class="header"> {% include 'includes/navbar.html' %}</div>
         <div class="main">
+
+                {% if form.errors %}
+    <div class="alert alert-danger">
+        <strong>Errores en el formulario:</strong>
+        <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
             <main>
                 {% block content %}{% endblock %}
             </main>
@@ -27,6 +46,14 @@
                 <form method="POST">
                     {% csrf_token %}
 
+                    {% if form.non_field_errors %}
+                    <div class="errorlist nonfield">
+                        {% for error in form.non_field_errors %}
+                        <div><strong>{{ error }}</strong></div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
                     <div>
                         <label for="id_nombre">Nombre:</label>
                         {{ form.nombre }}
@@ -35,6 +62,11 @@
                     <div>
                         <label for="id_apellido">Apellido:</label>
                         {{ form.apellido }}
+                    </div>
+
+                    <div>
+                        <label for="empleado-activo">Activacion de empleado</label>
+                        {{ form.activo }}
                     </div>
 
                     <div>
@@ -68,32 +100,42 @@
 
 
                     <div>
-                        <label for="id_fecha_contratacion">Fecha de Contratación:</label>
+
+                        <label for="{{ form.fecha_contratacion.id_for_label }}">Cédula:</label>
                         {{ form.fecha_contratacion }}
-                    </div>
+                        {% if form.fecha_contratacion.errors %}
+                        <div class="errorlist">
+                            {% for error in form.fecha_contratacion.errors %}
+                            <div><strong>{{ error }}</strong></div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <!--   <label for="id_fecha_contratacion">Fecha de Contratación:</label>
+                        {{ form.fecha_contratacion }}
+                    </div>-->
 
                     <div>
                         <label for="id_depa">Departamento:</label>
                         {{ form.id_depa }}
                     </div>
 
-                    <div>
-                        <label for="id_pro">Profesión:</label>
-                        {{ form.id_pro }}
-                    </div>
+                        <div>
+                            <label for="id_pro">Profesión:</label>
+                            {{ form.id_pro }}
+                        </div>
 
-                    <div>
-                        <label for="id_trabajo">Labor:</label>
-                        {{ form.id_trabajo }}
-                    </div>
+                        <div>
+                            <label for="id_trabajo">Labor:</label>
+                            {{ form.id_trabajo }}
+                        </div>
 
-                    <div>
-                        <label for="id_jornada">Tipo de Jornada:</label>
-                        {{ form.id_jornada }}
-                    </div>
-                    <div class="espacio">
-                        <button type="submit" class="guardar">Guardar</button>
-                    </div>
+                        <div>
+                            <label for="id_jornada">Tipo de Jornada:</label>
+                            {{ form.id_jornada }}
+                        </div>
+                        <div class="espacio">
+                            <button type="submit" class="guardar">Guardar</button>
+                        </div>
                 </form>
 
             </div>

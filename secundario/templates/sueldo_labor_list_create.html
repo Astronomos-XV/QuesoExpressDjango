@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ titulo }}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_datos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+    <style>
+        .tabla-sueldos { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .tabla-sueldos th, .tabla-sueldos td { 
+            border: 1px solid #a3a3a3; padding: 12px; text-align: left; background-color: white;
+        }
+        .tabla-sueldos th { background-color: #007c91; color: white;}
+        .usd-monto { font-weight: bold; color: #28a745; }
+        .form-creacion { background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <section class="layout">
+        <div class="header"> {% include 'includes/navbar.html' %}</div>
+        <div class="main-content">
+            <header>
+                <h1>{{ titulo }}</h1>
+                <p>Establecer y gestionar los sueldos base semanales en USD por cada cargo/labor.</p>
+                <!--{% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <li class="{{ message.tags }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %} -->
+            </header>
+
+            <main>
+                <div class="form-creacion">
+                    <h2>Añadir Nuevo Sueldo por Cargo</h2>
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {% if 'sueldo_base_semanal_usd' in field.name %}
+                                    <div class="input-with-prefix">
+                                        <span class="prefix">USD</span>
+                                        {{ field }}
+                                    </div>
+                                {% else %}
+                                    {{ field }}
+                                {% endif %}
+                                {% for error in field.errors %}<div class="error-message">{{ error }}</div>{% endfor %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn guardar">Crear Sueldo Base</button>
+                    </form>
+                </div>
+
+                <h2>Sueldos Base</h2>
+                {% if sueldos_labor %}
+                    <table class="tabla-sueldos">
+                        <thead>
+                            <tr>
+                                <th>Cargo (Labor)</th>
+                                <th>Sueldo Base Semanal (USD)</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sl in sueldos_labor %}
+                                <tr>
+                                    <td>{{ sl.id_labor.nombre_trabajo }}</td>
+                                    <td class="usd-monto">
+                                        $ {{ sl.sueldo_base_semanal_usd|floatformat:2 }}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'sueldo_labor_edit' pk=sl.id_labor.pk %}" class="btn btn-warning">Editar</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No hay sueldos base en USD registrados por cargo. Utilice el formulario de arriba para crearlos.</p>
+                {% endif %}
+            </main>
+        </div>
+
+
+        {% if sueldos_labor.has_other_pages %}
+                    <div class="button-group">
+                        {% if sueldos_labor.has_previous %}
+                        <a class="btn" href="?page=1">&laquo; Primera</a>
+                        {% endif %}
+
+                        {% if sueldos_labor.has_previous %}
+                        <a class="btn" href="?page={{ sueldos_labor.previous_page_number }}">Anterior</a>
+                        {% endif %}
+
+                        <div class="btn btn-info">
+                            <strong>Página {{ sueldos_labor.number }} de {{ sueldos_labor.paginator.num_pages }}.</strong>
+                        </div>
+                        {% if sueldos_labor.has_next %}
+                        <a class="btn" href="?page={{ sueldos_labor.next_page_number }}">Siguiente</a>
+                        {% endif %}
+
+                        {% if sueldos_labor.has_next %}
+                        <a class="btn" href="?page={{ sueldos_labor.paginator.num_pages }}">Última &raquo;</a>
+                        {% endif %}
+                    </div>
+    </section>     {% endif %}
+</body>
+</html>

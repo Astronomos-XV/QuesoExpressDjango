@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Usuario Normal</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+<div class="container">
+    <h2>Crear Usuario Normal</h2>
+    {% for msg in messages %}<p style="color:green">{{ msg }}</p>{% endfor %}
+    <form method="post">
+        {% csrf_token %}
+        <p>Cédula: <input type="text" name="cedula" maxlength="12" required></p>
+        <p>Usuario: <input type="text" name="username" required></p>
+        <p>Contraseña: <input type="password" name="password" required></p>
+        <button type="submit">Crear usuario</button>
+    </form>
+    <a class="btn" href="{% url 'home' %}">Volver a Inicio</a>
+    <a class="btn" href="{% url 'crear_superuser' %}">Usuario Normal</a>
+</div>
+</body>
+</html>

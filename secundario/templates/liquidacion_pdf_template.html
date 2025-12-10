@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Liquidación de Prestaciones Sociales</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 9.5pt;
+            line-height: 1.5;
+            color: #333;
+            margin: 20mm;
+            background-color: #f0f2f5;
+        }
+
+        .document-container {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #007c91;
+        }
+
+        .header .logo {
+            flex-shrink: 0;
+            margin-right: 20px;
+            width: 80px;
+            height: auto;
+        }
+
+        .header .company-info {
+            flex-grow: 1;
+            text-align: center;
+            font-size: 1.05em;
+            color: #555;
+        }
+
+        .header .company-info h1 {
+            color: #007c91;
+            font-size: 1.8em;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .header .company-info p {
+            margin: 2px 0;
+            font-size: 0.9em;
+        }
+
+        .header .document-title {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-top: 15px;
+            padding: 5px 0;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .section-heading {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #007c91;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e0e0e0;
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px 20px;
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .details-grid div {
+            padding: 5px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .details-grid span:first-child {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .concepts-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .concepts-table th,
+        .concepts-table td {
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            text-align: left;
+            font-size: 0.9em;
+        }
+
+        .concepts-table thead th {
+            background-color: #007c91;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-color: #007c91;
+        }
+
+        .concepts-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .concepts-table .total-row td {
+            background-color: #e6f7ff;
+            font-weight: bold;
+            color: #007c91;
+        }
+
+        .grand-total {
+            margin-top: 30px;
+            padding: 15px 25px;
+            background-color: #007c91;
+            color: #ffffff;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: right;
+            border-radius: 4px;
+            page-break-before: avoid;
+            break-before: avoid;
+        }
+
+        .signature-section {
+            margin-top: 60px;
+            text-align: center;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .signature-section p {
+            margin: 2px 0;
+            font-size: 0.95em;
+        }
+
+        .signature-line {
+            width: 280px;
+            border-bottom: 1px solid #555;
+            margin: 30px auto 5px auto;
+        }
+
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            margin-top: 40px;
+            justify-items: center;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 8pt;
+            color: #777;
+            margin-top: 40px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        @media print {
+            body {
+                margin: 15mm;
+            }
+
+            .document-container {
+                box-shadow: none;
+                border: none;
+            }
+
+            .page-break-after-prestaciones {
+                page-break-after: always;
+            }
+
+            .total-signatures-block {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="document-container">
+        <div class="document-title" style="text-align: center;">
+            <h1>RECIBO DE PAGO DE PRESTACIONES SOCIALES</h1>
+        </div>
+
+        <div class="section">
+            <h2 class="section-heading">Datos del Empleado y Relación Laboral</h2>
+            <div class="details-grid">
+                <div><span>Fecha:</span> {{ liquidacion.fecha_fin_relacion|date:"d/m/Y" }}</div>
+                <div><span>Nombre del Empleado:</span> {{ liquidacion.empleado.nombre }}
+                    {{liquidacion.empleado.apellido}}</div>
+                <div><span>Cédula de Identidad:</span> {{ liquidacion.empleado.cedula }}</div>
+                <div><span>Cargo:</span> {{ liquidacion.empleado.id_trabajo.nombre_trabajo }}</div>
+                <div><span>Departamento:</span> {{ liquidacion.empleado.id_depa.nombre_depa }}</div>
+                <div><span>Fecha de Ingreso:</span> {{ liquidacion.empleado.fecha_contratacion|date:"d/m/Y" }}</div>
+                <div><span>Fecha de Egreso:</span> {{ liquidacion.fecha_fin_relacion|date:"d/m/Y" }}</div>
+                <div><span>Motivo de Terminación:</span> {{ liquidacion.get_motivo_terminacion_display }}</div>
+                {% if liquidacion.motivo_terminacion == 'vacaciones' %}
+                <div><span>Días de Vacaciones:</span> {{ liquidacion.dias_vacaciones_otorgados|default:"0" }} días
+                    hábiles</div>
+                <div><span>Fecha de Regreso:</span> {{ liquidacion.fecha_regreso_trabajo|date:"d/m/Y" }}</div>
+                {% endif %}
+                <div><span>Último Salario Normal:</span> Bs. {{ liquidacion.salario_normal_final|floatformat:2 }}</div>
+                <div><span>Último Salario Integral:</span> Bs. {{ liquidacion.salario_integral_final|floatformat:2 }}
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-heading">Conceptos de Liquidación</h2>
+            <table class="concepts-table">
+                <thead>
+                    <tr>
+                        <th style="width: 70%;">CONCEPTO</th>
+                        <th style="width: 30%;">MONTO (BS.)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Monto de Garantía de Prestaciones Sociales Acumuladas</td>
+                        <td>{{ liquidacion.monto_prestaciones_garantia|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <td>Intereses sobre Prestaciones Sociales</td>
+                        <td>{{ liquidacion.monto_intereses_prestaciones|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <td>Cálculo Retroactivo de Prestaciones Sociales (Art. 142.c LOTTT)</td>
+                        <td>{{ liquidacion.monto_prestaciones_retroactivo|floatformat:2 }}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total Prestaciones a Pagar</td>
+                        <td><b>{{ liquidacion.monto_prestaciones_a_pagar|floatformat:2 }}</b></td>
+                    </tr>
+                    <tr>
+                        <td>Menos: Anticipos de Prestaciones Sociales Descontados</td>
+                        <td>- {{ liquidacion.anticipos_prestaciones|floatformat:2 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="page-break-after-prestaciones"></div>
+            <h2 class="section-heading">Detalle de Otros Conceptos</h2>
+            <table class="concepts-table">
+                <thead>
+                    <tr>
+                        <th style="width: 70%;">CONCEPTO</th>
+                        <th style="width: 30%;">MONTO (BS.)</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td>Utilidades Pendientes ({{ liquidacion.dias_utilidades_pendientes|floatformat:0 }} días)</td>
+                        <td>{{ liquidacion.monto_utilidades_pendientes|floatformat:2 }}</td>
+                    </tr>
+                    {% if liquidacion.monto_indemnizacion_despido > 0 %}
+                    <tr>
+                        <td>Indemnización por Despido Injustificado</td>
+                        <td>{{ liquidacion.monto_indemnizacion_despido|floatformat:2 }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if liquidacion.monto_preaviso > 0 %}
+                    <tr>
+                        <td>Monto de Preaviso</td>
+                        <td>{{ liquidacion.monto_preaviso|floatformat:2 }}</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="total-signatures-block">
+            <div class="grand-total">
+                TOTAL GENERAL DE LIQUIDACIÓN: Bs. {{ liquidacion.total_liquidacion|floatformat:2 }}
+            </div>
+
+            <div class="signatures-grid">
+                <div class="signature-section">
+                    <div class="signature-line"></div>
+                    <p>Firma del Empleado</p>
+                    <p>{{ liquidacion.empleado.nombre }} {{ liquidacion.empleado.apellido }}</p>
+                    <p>C.I. {{ liquidacion.empleado.cedula }}</p>
+                </div>
+                <div class="signature-section">
+                    <div class="signature-line"></div>
+                    <p>Firma del Representante de la Empresa</p>
+                    <p>Nombre del Representante</p>
+                    <p>Cargo</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Documento generado el {{ liquidacion.fecha_creacion|date:"d/m/Y H:i" }}</p>
+        </div>
+    </div>
+</body>
+
+</html>
